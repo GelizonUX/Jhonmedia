@@ -278,9 +278,11 @@ html.js:not(.is-ready) .nav { opacity: 0; }
 .nav-cta { border: 1px solid #fff; padding: 12px 20px !important; }
 .nav-menu-btn { font-size: var(--t-label); letter-spacing: .12em; text-transform: uppercase; min-height: 44px; min-width: 44px; }
 @media (min-width: 1024px) {
-  .nav-clock { display: block; position: absolute; left: 50%; transform: translateX(-50%); }
   .nav-links { display: flex; }
   .nav-menu-btn { display: none; }
+}
+@media (min-width: 1200px) {
+  .nav-clock { display: block; position: absolute; left: 50%; transform: translateX(-50%); }
 }
 html:not(.js) .nav-menu-btn { display: none; }
 @media (max-width: 1023px) {

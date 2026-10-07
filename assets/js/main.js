@@ -120,6 +120,7 @@
     var nodes = tokens.map(function (t) {
       if (t.br) { var br = doc.createElement('br'); el.appendChild(br); return br; }
       var outer = doc.createElement('span'), inner = outer;
+      outer.style.whiteSpace = 'nowrap';
       t.chain.forEach(function (c, i) { var cl = c.cloneNode(false); if (i === 0) { outer.appendChild(cl); } else inner.appendChild(cl); inner = cl; });
       inner.appendChild(doc.createTextNode(t.text));
       if (t.space && el.lastChild) el.appendChild(doc.createTextNode(' '));
