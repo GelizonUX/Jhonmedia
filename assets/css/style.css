@@ -718,3 +718,19 @@ html.menu-open .nav { visibility: hidden; }
 .process.is-pinned .d1 { margin-bottom: 0; }
 .process.is-pinned .pr-stage { padding-top: calc(var(--nav-h) + var(--s-6)); }
 .process.is-pinned .pr-row { margin-block: auto; } /* panels centred in the space under the progress bar */
+
+/* ---------- Hero: breathing room ---------- */
+.hero { --hero-chrome: 340px; }
+.hero-title { line-height: .9;
+  font-size: min(var(--t-mega), 9vw, calc((100vh - var(--hero-chrome)) / 3.1));
+  font-size: min(var(--t-mega), 9vw, calc((100svh - var(--hero-chrome)) / 3.1)); }
+@media (max-width: 767px) { .hero-title { font-size: min(var(--t-mega), 12.5vw); } }
+.hero-row { margin-top: var(--s-8); padding-bottom: var(--s-6); }
+.hero-intro { max-width: 34ch; font-size: var(--t-body); line-height: 1.5; color: var(--c-mute); }
+.hero-ctas { flex-direction: row; flex-wrap: wrap; gap: var(--s-3); }
+.hero-ctas .btn { width: auto; }
+@media (min-width: 768px) {
+  .hero-row { grid-template-columns: repeat(12, 1fr); align-items: end; }
+  .hero-intro { grid-column: 1 / 7; }
+  .hero-ctas { grid-column: 7 / 13; justify-content: flex-end; }
+}
