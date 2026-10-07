@@ -293,3 +293,5 @@
 @keyframes rzblade2 { 0% { transform: scaleY(0); } 7.3% { transform: scaleY(.33); } 14.6% { transform: scaleY(.66); } 21.9%, 100% { transform: scaleY(1); } }
 @keyframes rza2 { 0%, 29% { transform: none; } 29.2%, 100% { transform: translateX(-3px); } }
 @keyframes rzb2 { 0%, 29% { transform: none; } 29.2%, 100% { transform: translateX(3px); } }
+.scr .dec2 { display: none; }
+.pm-frame.pm-wide .scr .dec2 { display: block; }

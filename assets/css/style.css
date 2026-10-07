@@ -716,4 +716,5 @@ html.menu-open .nav { visibility: hidden; }
   .faq-list { grid-column: 7 / 13; }
 }
 .process.is-pinned .d1 { margin-bottom: 0; }
-.process.is-pinned .pr-stage { padding-top: var(--rh-content); } /* 64px heading → progress bar; the nav hides on scroll-down while pinned */
+.process.is-pinned .pr-stage { padding-top: calc(var(--nav-h) + var(--s-6)); }
+.process.is-pinned .pr-row { margin-block: auto; } /* panels centred in the space under the progress bar */

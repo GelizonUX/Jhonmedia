@@ -239,7 +239,7 @@
     });
     box(pb, 10, 140, 4, 160, INK3);
     M.meter = box(pb, 10, 140, 4, 160, '#fff', 'transform-origin:50% 100%');
-    txt(pb, 'left:-4px;top:118px;font-size:7px;transform:rotate(-90deg)', 'ITCH', 'dec');
+    txt(pb, 'left:-4px;top:118px;font-size:7px;transform:rotate(-90deg)', 'ITCH', 'dec dec2');
     mk(pb, 'vig');
 
     // --- DEMO ---
@@ -369,7 +369,7 @@
     var hatch = 'repeating-linear-gradient(45deg,rgba(255,255,255,.25) 0 1px,transparent 1px 6px)';
     var ui1 = box(gd, 222, 250, 40, 170, hatch, ''); ui1.className = 'ui';
     var ui2 = box(gd, 13, 404, 244, 48, hatch, ''); ui2.className = 'ui';
-    txt(ui1, 'left:3px;top:3px;font-size:7px', 'UI', 'dec');
+    txt(ui1, 'left:3px;top:3px;font-size:7px', 'UI', 'dec dec2');
 
     // --- HUD ---
     var hud = mk(scr, 'hud');
@@ -478,6 +478,7 @@
       // D3 wipe + D4 zoom
       T(M.d3, 'translateX(' + px(270 * (1 - w)) + ')');
       var ww = u <= .68 ? eInOutQuart(seg(u, .53, .68)) : 1 - .5 * eOutCubic(seg(u, .68, .76));
+      ww += (1 - ww) * eInOutCubic(seg(u, .76, .80)); // finish on AFTER before the close-up, no seam
       T(M.wipe, 'translateX(' + px((ww - 1) * 270) + ')'); T(M.after, 'translateX(' + px((1 - ww) * 270) + ')');
       T(M.div, 'translateX(' + px(ww * 270) + ')'); O(M.div, 1 - seg(u, .76, .80));
       C(M.d3, 'zclip', u >= .8);
@@ -650,7 +651,7 @@
     else { W = $('#pm').clientWidth; iw = W - 14; ih = iw * 16 / 9; }
     frame.style.width = px(iw + 14); frame.style.height = px(ih + 14);
     frame.style.setProperty('--k', (iw / 270).toFixed(4));
-    C(frame, 'pm-small', iw / 270 < .8);
+    C(frame, 'pm-small', iw / 270 < .8); C(frame, 'pm-wide', iw > 330);
     SUBS.forEach(function (sb) { C(sb.el, 'no-th', sb.d / 30 * trackW < 60); });
     [RT, SP].forEach(function (g) { if (g) { g.W = g.plot.clientWidth || 300; g.H = g.plot.clientHeight || 150; } });
     cur.f = -1; MON.f = -1; cur.force = true;
