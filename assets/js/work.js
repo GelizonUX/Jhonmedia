@@ -45,8 +45,8 @@ window.WORK_CONFIG = {
 
 window.WORK = [
   {
-    title: "The 3-second skin reveal",
-    brand: "Kinfolk Skin",            // placeholder — replace
+    title: "The 3-second reveal",
+    brand: "Solace Band",
     category: "UGC",
     format: "0:24 · 9:16",
     metric: "2.4x ROAS",              // placeholder — replace
@@ -54,8 +54,8 @@ window.WORK = [
     tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000001" // placeholder — replace
   },
   {
-    title: "Desk setup in 15 seconds",
-    brand: "Atlas Supply",            // placeholder — replace
+    title: "The journal in 15 seconds",
+    brand: "The Successful Man Journal",
     category: "Product Demo",
     format: "0:15 · 9:16",
     metric: "41% hook rate",          // placeholder — replace
@@ -63,8 +63,8 @@ window.WORK = [
     tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000002" // placeholder — replace
   },
   {
-    title: "Founder explains the formula",
-    brand: "Solace",                  // placeholder — replace
+    title: "Founder tells the story",
+    brand: "Solace Band",
     category: "Talking Head",
     format: "0:38 · 9:16",
     metric: "-32% CPA",               // placeholder — replace
@@ -73,7 +73,7 @@ window.WORK = [
   },
   {
     title: "Why my dog stopped scratching",
-    brand: "Halo Pet",                // placeholder — replace
+    brand: "The HonestDog Company",
     category: "UGC",
     format: "0:29 · 9:16",
     metric: "3.1x ROAS",              // placeholder — replace
@@ -82,7 +82,7 @@ window.WORK = [
   },
   {
     title: "Five reasons, zero footage",
-    brand: "Meridian",                // placeholder — replace
+    brand: "The Successful Man Journal",
     category: "Motion",
     format: "0:12 · 9:16",
     metric: "$0.71 CPC",              // placeholder — replace
@@ -91,7 +91,7 @@ window.WORK = [
   },
   {
     title: "Unboxing, then the twist",
-    brand: "Vera Home",               // placeholder — replace
+    brand: "Solace Band",
     category: "Product Demo",
     format: "0:21 · 9:16",
     metric: "38% hold rate",          // placeholder — replace
@@ -100,7 +100,7 @@ window.WORK = [
   },
   {
     title: "Three creators, one hook",
-    brand: "Loop Active",             // placeholder — replace
+    brand: "The HonestDog Company",
     category: "UGC",
     format: "0:26 · 9:16",
     metric: "18 hooks tested",        // placeholder — replace
@@ -108,8 +108,8 @@ window.WORK = [
     tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000007" // placeholder — replace
   },
   {
-    title: "The dermatologist breakdown",
-    brand: "Brightwell",              // placeholder — replace
+    title: "The vet breakdown",
+    brand: "The HonestDog Company",
     category: "Talking Head",
     format: "0:44 · 9:16",
     metric: "2.0x ROAS",              // placeholder — replace
@@ -118,7 +118,7 @@ window.WORK = [
   },
   {
     title: "Kinetic type launch spot",
-    brand: "Tidal",                   // placeholder — replace
+    brand: "The Successful Man Journal",
     category: "Motion",
     format: "0:09 · 9:16",
     metric: "1.2M views",             // placeholder — replace
