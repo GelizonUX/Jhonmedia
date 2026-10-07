@@ -526,7 +526,7 @@
           links.forEach(function (l) { l.classList.toggle('is-active', l.getAttribute('data-nav') === e.target.id); });
         });
       }, { rootMargin: '-45% 0px -50% 0px' });
-      ['work', 'services', 'process', 'faq', 'top', 'results', 'anatomy', 'clients', 'packages', 'contact'].forEach(function (id) { var s = doc.getElementById(id); if (s) io.observe(s); });
+      ['work', 'services', 'process', 'faq', 'top', 'results', 'anatomy', 'clients', 'contact'].forEach(function (id) { var s = doc.getElementById(id); if (s) io.observe(s); });
     }
     if (!btn || !menu) return;
     function open() {
@@ -661,102 +661,8 @@
     $$('.slabel-tc[data-in]').forEach(function (n) { io.observe(n); });
   }
 
-  /* ---------- Edit timeline (3.5, 4.6) ---------- */
+  /* ---------- Edit timeline: lives in anatomy.js (docs/TIMELINE-V2.md) ---------- */
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  function initTimeline() {
-    var sec = $('#anatomy'); if (!sec) return;
-    var scroll = $('#an-scroll'), scroller = $('#tl-scroller'), track = $('#tl-track'), ph = $('#tl-playhead');
-    var tcEl = $('#an-tc'), titleEl = $('#an-title'), bodyEl = $('#an-body'), statEl = $('#an-stat'), waveLit = $('#wave-lit');
-    var chapters = $$('#an-chapters button'), clips = $$('.tl-v1 .clip'), tlRegion = $('#tl');
-    var RANGES = [[0, 3], [3, 8], [8, 16], [16, 23], [23, 27], [27, 30]];
-    var BEATS = $$('#beats-list li').map(function (li, i) {
-      var ps = $$('p', li);
-      return { s: RANGES[i][0], e: RANGES[i][1], title: $('h3', li).textContent, body: ps[0].textContent, stat: ps[1].textContent };
-    });
-
-    // Seeded waveform, ~240 bars
-    var rnd = mulberry32(1337), bars = [];
-    for (var i = 0; i < 240; i++) {
-      var env = 0.55 + 0.45 * Math.sin(i / 240 * Math.PI * 3 + 0.6) * Math.sin(i / 17);
-      bars.push(Math.round(clamp(12 + rnd() * 60 * (0.6 + Math.abs(env)), 8, 96)));
-    }
-    ['#wave', '#wave-lit'].forEach(function (id) {
-      var w = $(id); if (!w) return;
-      var frag = doc.createDocumentFragment();
-      bars.forEach(function (h) { var b = doc.createElement('i'); b.style.height = h + '%'; frag.appendChild(b); });
-      w.appendChild(frag);
-    });
-
-    var mode = '', top = 0, height = 1, trackW = 1, beat = -1, lastTc = '', lastP = -1, stripDirty = true, cutTimer;
-    titleEl.__splitable = bodyEl.__splitable = true;
-
-    function setMode() {
-      var m = REDUCED ? 'static' : (mqDesk.matches ? 'scrub' : 'strip');
-      if (m === mode) return; mode = m;
-      sec.classList.toggle('is-scrub', m === 'scrub'); sec.classList.toggle('is-strip', m === 'strip');
-      beat = -1; lastP = -1; lastTc = ''; stripDirty = true;
-      ph.style.transform = ''; waveLit.style.clipPath = '';
-      clips.forEach(function (c) { c.classList.remove('is-played', 'is-active'); });
-      if (m === 'static') return;
-      measure();
-      render(m === 'strip' ? 0 : progress() * 30, true);
-    }
-    function measure() {
-      if (!scroll) return;
-      top = docTop(scroll); height = scroll.offsetHeight; trackW = track.offsetWidth || 1;
-      stripDirty = true; lastP = -1;
-    }
-    function progress() { return clamp((S.smooth - top) / Math.max(1, height - S.vh), 0, 1); }
-    function beatAt(t) { for (var i = BEATS.length - 1; i >= 0; i--) if (t + 0.001 >= BEATS[i].s) return i; return 0; }
-    function render(t, instant) {
-      var p = t / 30;
-      var str = tc(Math.min(Math.floor(p * 30 * 24), 720));
-      if (str !== lastTc) { tcEl.textContent = str; lastTc = str; }
-      if (mode === 'scrub') {
-        ph.style.transform = 'translate3d(' + (p * (trackW - 1)).toFixed(1) + 'px,0,0)';
-        waveLit.style.clipPath = 'inset(0 ' + ((1 - p) * 100).toFixed(2) + '% 0 0)';
-      } else waveLit.style.clipPath = 'inset(0 ' + ((1 - p) * 100).toFixed(2) + '% 0 0)';
-      var b = beatAt(t);
-      if (b !== beat) {
-        var first = beat === -1; beat = b;
-        var B = BEATS[b];
-        if (first || instant) { titleEl.textContent = B.title; bodyEl.textContent = B.body; statEl.textContent = B.stat; }
-        else {
-          swapText(titleEl, B.title, 60); swapText(bodyEl, B.body, 60); statEl.textContent = B.stat;
-          tcEl.classList.add('is-cut'); clearTimeout(cutTimer); cutTimer = setTimeout(function () { tcEl.classList.remove('is-cut'); }, 80);
-        }
-        chapters.forEach(function (c, i) { c.classList.toggle('is-active', i === b); c.setAttribute('aria-current', i === b ? 'step' : 'false'); });
-      }
-      clips.forEach(function (c, i) { c.classList.toggle('is-played', BEATS[i].s < t - 0.001 || i < b); c.classList.toggle('is-active', i === b); });
-    }
-    function jump(i) {
-      i = clamp(i, 0, BEATS.length - 1);
-      var behavior = REDUCED ? 'auto' : 'smooth';
-      if (mode === 'scrub') win.scrollTo({ top: top + (BEATS[i].s / 30) * (height - S.vh) + 2, behavior: behavior });
-      else if (mode === 'strip') scroller.scrollTo({ left: (BEATS[i].s / 30) * trackW, behavior: behavior });
-    }
-    chapters.concat(clips).forEach(function (c) { on(c, 'click', function () { jump(Number(c.getAttribute('data-beat'))); }); });
-    on(tlRegion, 'keydown', function (e) {
-      if (mode === 'static') return;
-      if (e.key === 'ArrowRight') { e.preventDefault(); jump(beat + 1); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); jump(beat - 1); }
-    });
-    on(scroller, 'scroll', function () { stripDirty = true; }, { passive: true });
-
-    ticks.push(function () {
-      if (mode === 'scrub') {
-        if (S.smooth < top - S.vh || S.smooth > top + height) return;
-        var p = progress(); if (Math.abs(p - lastP) < 0.00005) return; lastP = p;
-        render(p * 30);
-      } else if (mode === 'strip' && stripDirty) {
-        stripDirty = false;
-        render(clamp(scroller.scrollLeft / trackW, 0, 1) * 30);
-      }
-    });
-    measures.push(measure);
-    listen(mqDesk, setMode); listen(mqReduced, setMode);
-    setMode();
-  }
 
   /* ---------- Process horizontal (3.7, 4.7) ---------- */
   function initProcess() {
@@ -866,9 +772,6 @@
       };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(CONFIG.email).then(ok, fallback); else fallback();
     });
-    $$('[data-subject]').forEach(function (a) {
-      on(a, 'click', function () { if (mail) mail.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent(a.getAttribute('data-subject')); });
-    });
     var sec = $('#contact'), title = $('.contact-title');
     if (sec && title) {
       title.classList.add('has-parallax');
@@ -883,21 +786,6 @@
 
   /* ---------- Footer ---------- */
   function initFooter() {
-    var mark = $('.ft-mark'); if (!mark) return;
-    // Fit the wordmark gutter to gutter on one line
-    var inner = $('.ft-mark-in', mark), fitW = -1;
-    var fit = function () {
-      var w = mark.clientWidth; if (!w || w === fitW) return; fitW = w;
-      inner.style.fontSize = '100px'; inner.style.display = 'inline-block';
-      var nat = inner.scrollWidth; inner.style.display = '';
-      var px = 100 * (w - 2) / nat;
-      inner.style.fontSize = px.toFixed(2) + 'px';
-      mark.style.height = (px * 0.8 * 0.92).toFixed(1) + 'px'; // cropped ~8% by the edge
-    };
-    fit(); measures.push(fit);
-    if (!('IntersectionObserver' in win)) { mark.classList.add('is-in'); return; }
-    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { mark.classList.add('is-in'); io.disconnect(); } }, { threshold: 0.1 });
-    io.observe(mark);
     on($('#to-top'), 'click', function (e) { e.preventDefault(); win.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }); var m = $('.nav-mark'); if (m) m.focus({ preventScroll: true }); });
   }
 
@@ -922,13 +810,16 @@
   safe('parallax', initParallax);
   safe('counters', initCounters);
   safe('labelTc', initLabelTc);
-  safe('timeline', initTimeline);
   safe('process', initProcess);
   safe('testimonials', initTestimonials);
   safe('faq', initFaq);
   safe('contact', initContact);
   safe('footer', initFooter);
   safe('lightbox', initLightbox);
+  // Bridge for assets/js/anatomy.js (loaded right after this file)
+  win.JM = { S: S, ticks: ticks, measures: measures, measureAll: measureAll, tc: tc, pad: pad, clamp: clamp, swapText: swapText,
+    mulberry32: mulberry32, isReduced: function () { return REDUCED; }, mqDesk: mqDesk, mqReduced: mqReduced, listen: listen,
+    docTop: docTop, on: on, $: $, $$: $$, safe: safe };
   win.__jmReady = true; clearTimeout(win.__jmSafety);
   safe('preloader', initPreloader);
 

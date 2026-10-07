@@ -13,6 +13,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/anatomy.css">
 <script>
   /* Progressive enhancement flag. If main.js never boots (blocked, offline, error),
      the safety timer removes the flag so nothing stays hidden. */
@@ -160,73 +161,84 @@
   <p class="micro muted stats-note">Numbers from client ad accounts. Your results depend on offer, product and spend.</p>
 </section>
 
-<!-- [03] ANATOMY / TIMELINE -->
+<!-- [03] ANATOMY / TIMELINE (V2: docs/TIMELINE-V2.md; behaviour in assets/js/anatomy.js) -->
 <section class="section anatomy" id="anatomy" aria-labelledby="anatomy-title">
   <div class="slabel label" aria-hidden="true"><span>[03]</span><span class="slabel-name">ANATOMY OF AN AD</span><span class="slabel-tc" data-in="00:00:51:00" data-out="00:01:21:00">TC 00:00:51:00 → 00:01:21:00</span></div>
+  <div class="an-head">
+    <h2 class="d1" id="anatomy-title" data-split>ANATOMY <span class="thin">of a</span> WINNER.</h2>
+    <p class="muted an-sub">A 30-second DTC ad, cut in front of you. <span id="an-verb">Scroll to scrub.</span></p>
+  </div>
   <div class="an-scroll" id="an-scroll">
     <div class="an-stage">
-      <div class="an-head">
-        <h2 class="d1" id="anatomy-title" data-split>ANATOMY <span class="thin">of a</span> WINNER.</h2>
-        <p class="muted an-sub">A 30-second DTC ad, frame by frame. Scroll to scrub.</p>
-      </div>
+      <div class="an-appbar micro muted" aria-hidden="true"><span><i class="rec-dot"></i> WINNER_V7 · SEQ 01</span><span>1080×1920 · 24 FPS · DUR 00:00:30:00</span></div>
 
       <div class="an-viewer">
-        <div class="an-tc d2" id="an-tc" aria-hidden="true">00:00:00:00</div>
-        <h3 class="h1 an-title" id="an-title" aria-live="polite">The hook</h3>
+        <p class="an-idx label muted" id="an-idx" aria-hidden="true">01 / 06 · 00:00 → 00:03</p>
+        <h3 class="an-title" id="an-title" aria-live="polite"><span class="thin">the</span><br>HOOK</h3>
+        <div class="an-mtc thin" id="an-mtc" aria-hidden="true">00:00:00:00</div>
+        <div class="an-spark" id="an-spark" aria-hidden="true"></div>
         <p class="an-body" id="an-body">Three seconds. One idea. A pattern break, a bold claim or a result shown first. If they don't stop here, nothing after this matters.</p>
         <p class="label muted an-stat" id="an-stat">TARGET: 30%+ HOOK RATE</p>
       </div>
 
-      <ol class="an-chapters" id="an-chapters" aria-label="Beats">
-        <li><button type="button" data-beat="0" data-cursor="link"><span class="label">01</span> The hook</button></li>
-        <li><button type="button" data-beat="1" data-cursor="link"><span class="label">02</span> The problem</button></li>
-        <li><button type="button" data-beat="2" data-cursor="link"><span class="label">03</span> The demo</button></li>
-        <li><button type="button" data-beat="3" data-cursor="link"><span class="label">04</span> The proof</button></li>
-        <li><button type="button" data-beat="4" data-cursor="link"><span class="label">05</span> The offer</button></li>
-        <li><button type="button" data-beat="5" data-cursor="link"><span class="label">06</span> The CTA</button></li>
-      </ol>
+      <div class="pm" id="pm" aria-hidden="true">
+        <div class="pm-bar micro"><span>PROGRAM · SEQ 01</span><span class="pm-shuttle" id="pm-shuttle">❚❚</span><span class="an-tc" id="an-tc">00:00:00:00</span></div>
+        <div class="pm-well" id="pm-well"></div>
+        <div class="pm-transport micro muted"><span class="pm-glyphs"><i class="g-start"></i><i class="g-rev"></i><i class="g-play"></i><i class="g-end"></i></span><span>FIT 1/1</span></div>
+      </div>
+      <button type="button" class="pm-play label" id="pm-play" hidden>▶ PLAY <span class="muted">00:30</span></button>
 
-      <div class="tl" id="tl" tabindex="0" role="region" aria-label="Ad timeline">
-        <div class="tl-labels micro" aria-hidden="true"><span></span><span>V2</span><span>V1</span><span>A1</span></div>
-        <div class="tl-window">
-          <div class="tl-scroller" id="tl-scroller">
-            <span class="tl-spacer"></span>
-            <div class="tl-track" id="tl-track">
-              <div class="tl-ruler" aria-hidden="true">
-                <span style="left:0%">00:00</span><span style="left:16.6667%">00:05</span><span style="left:33.3333%">00:10</span><span style="left:50%">00:15</span><span style="left:66.6667%">00:20</span><span style="left:83.3333%">00:25</span><span style="left:100%">00:30</span>
-              </div>
-              <div class="tl-lane tl-v2" aria-hidden="true">
-                <span class="tx" style="left:0%;width:6.6667%">"Stop scrolling if…"</span>
-                <span class="tx cap" style="left:10%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:16.6667%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:23.3333%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:30%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:36.6667%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:43.3333%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:50%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:56.6667%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:63.3333%;width:6.6667%">CAPTIONS</span>
-                <span class="tx cap" style="left:70%;width:6.6667%">CAPTIONS</span>
+      <div class="an-side">
+        <div class="rt" id="rt" aria-hidden="true"></div>
+        <ol class="an-chapters" id="an-chapters" aria-label="Beats">
+        <li><button type="button" data-beat="0" data-cursor="link"><span class="label">01</span> <span class="ch-n">HOOK</span><span class="ch-t micro muted" aria-hidden="true">00:00</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="1" data-cursor="link"><span class="label">02</span> <span class="ch-n">PROBLEM</span><span class="ch-t micro muted" aria-hidden="true">00:03</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="2" data-cursor="link"><span class="label">03</span> <span class="ch-n">DEMO</span><span class="ch-t micro muted" aria-hidden="true">00:08</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="3" data-cursor="link"><span class="label">04</span> <span class="ch-n">PROOF</span><span class="ch-t micro muted" aria-hidden="true">00:16</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="4" data-cursor="link"><span class="label">05</span> <span class="ch-n">OFFER</span><span class="ch-t micro muted" aria-hidden="true">00:23</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="5" data-cursor="link"><span class="label">06</span> <span class="ch-n">CTA</span><span class="ch-t micro muted" aria-hidden="true">00:27</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        </ol>
+      </div>
+
+      <div class="tl-box">
+        <div class="tl-tools micro muted" id="tl-tools" aria-hidden="true"></div>
+        <div class="tl" id="tl" tabindex="0" role="region" aria-label="Ad timeline">
+          <div class="tl-labels micro" aria-hidden="true"><span></span><span>V2</span><span>T1</span><span>V1</span><span class="tl-a1l">A1<i class="mtr"><b id="mtr-l"></b><b id="mtr-r"></b><s id="mtr-pk"></s></i></span></div>
+          <div class="tl-window">
+            <div class="tl-scroller" id="tl-scroller">
+              <span class="tl-spacer"></span>
+              <div class="tl-track" id="tl-track">
+                <div class="tl-ruler" id="tl-ruler" aria-hidden="true">
+                  <span style="left:0%">00:00</span><span style="left:16.6667%">00:05</span><span style="left:33.3333%">00:10</span><span style="left:50%">00:15</span><span style="left:66.6667%">00:20</span><span style="left:83.3333%">00:25</span><span style="left:100%">00:30</span>
+                </div>
+                <div class="tl-lane tl-v2" aria-hidden="true">
+                <span class="tx" style="left:0%;width:5%">"Stop scrolling if…"</span>
+                <span class="tx" style="left:26.6667%;width:6.6667%">CALLOUTS</span>
+                <span class="tx" style="left:40%;width:8%">COMPARE</span>
+                <span class="tx" style="left:53.3333%;width:23.3333%">REVIEWS</span>
                 <span class="tx" style="left:76.6667%;width:13.3333%">$ OFFER CARD</span>
                 <span class="tx" style="left:90%;width:10%">TAP ↓</span>
+                </div>
+                <div class="tl-lane tl-t1" id="tl-t1" aria-hidden="true"></div>
+                <div class="tl-lane tl-v1" id="tl-v1">
+                <button type="button" class="clip" data-beat="0" style="left:0%;width:10%" aria-label="Jump to the hook"><span class="clip-l">HOOK</span></button>
+                <button type="button" class="clip" data-beat="1" style="left:10%;width:16.6667%" aria-label="Jump to the problem"><span class="clip-l">PROBLEM</span></button>
+                <button type="button" class="clip" data-beat="2" style="left:26.6667%;width:26.6667%" aria-label="Jump to the demo"><span class="clip-l">DEMO</span></button>
+                <button type="button" class="clip" data-beat="3" style="left:53.3333%;width:23.3333%" aria-label="Jump to the proof"><span class="clip-l">PROOF</span></button>
+                <button type="button" class="clip" data-beat="4" style="left:76.6667%;width:13.3333%" aria-label="Jump to the offer"><span class="clip-l">OFFER</span></button>
+                <button type="button" class="clip" data-beat="5" style="left:90%;width:10%" aria-label="Jump to the CTA"><span class="clip-l">CTA</span></button>
+                </div>
+                <div class="tl-lane tl-a1" aria-hidden="true">
+                  <div class="wave" id="wave"></div>
+                  <div class="wave-mask" id="wave-mask"><div class="wave wave-lit" id="wave-lit"></div></div>
+                </div>
+                <div class="tl-playhead" id="tl-playhead" aria-hidden="true"><i></i><span class="tl-trail" id="tl-trail"></span></div>
+                <div class="tl-razor" id="tl-razor" aria-hidden="true"><span class="rz-a"></span><span class="rz-b"></span><span class="rz-blade"></span><span class="rz-l micro" id="rz-l">CUT 00:00:03:00</span></div>
               </div>
-              <div class="tl-lane tl-v1">
-                <button type="button" class="clip" data-beat="0" style="left:0%;width:10%" aria-label="Jump to the hook">HOOK</button>
-                <button type="button" class="clip" data-beat="1" style="left:10%;width:16.6667%" aria-label="Jump to the problem">PROBLEM</button>
-                <button type="button" class="clip" data-beat="2" style="left:26.6667%;width:26.6667%" aria-label="Jump to the demo">DEMO</button>
-                <button type="button" class="clip" data-beat="3" style="left:53.3333%;width:23.3333%" aria-label="Jump to the proof">PROOF</button>
-                <button type="button" class="clip" data-beat="4" style="left:76.6667%;width:13.3333%" aria-label="Jump to the offer">OFFER</button>
-                <button type="button" class="clip" data-beat="5" style="left:90%;width:10%" aria-label="Jump to the CTA">CTA</button>
-              </div>
-              <div class="tl-lane tl-a1" aria-hidden="true">
-                <div class="wave" id="wave"></div>
-                <div class="wave wave-lit" id="wave-lit"></div>
-              </div>
-              <div class="tl-playhead" id="tl-playhead" aria-hidden="true"><i></i></div>
+              <span class="tl-spacer"></span>
             </div>
-            <span class="tl-spacer"></span>
+            <div class="tl-center" aria-hidden="true"><i></i></div>
           </div>
-          <div class="tl-center" aria-hidden="true"><i></i></div>
         </div>
       </div>
 
@@ -447,5 +459,6 @@
 
 <script src="assets/js/work.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/anatomy.js"></script>
 </body>
 </html>

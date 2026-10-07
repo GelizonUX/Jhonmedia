@@ -29,7 +29,7 @@ One page. Anchor navigation. No routing.
 3. **Monochrome only.** Black, white, five grays. Hierarchy comes from size, weight and gray value. Never color.
 4. **Restraint over noise.** Every animation has one job. Max one "big" motion per viewport. If two things move at once, one of them is wrong.
 5. **Thumbnails are the product.** The work grid gets the most space and the cleanest treatment. The site exists to get someone to tap a thumbnail and then the email.
-6. **Fast.** No webfonts to load (system Helvetica). No libraries. Target: LCP under 1.5s, total JS under 25KB unminified.
+6. **Fast.** No webfonts to load (system Helvetica). No libraries. Target: LCP under 1.5s. JS budget (unminified): main.js ≤ 50KB, anatomy.js ≤ 22KB.
 
 ---
 
