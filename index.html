@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jhon Media · DTC Video Ad Editor</title>
+<meta name="description" content="Jhon edits performance video ads for DTC brands. UGC, product demos, talking heads and motion text for TikTok, Reels and Meta.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Jhon Media · DTC Video Ad Editor">
+<meta property="og:description" content="Jhon edits performance video ads for DTC brands. UGC, product demos, talking heads and motion text for TikTok, Reels and Meta.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/og.jpg"><!-- placeholder — replace with a 1200x630 image and an absolute URL once deployed -->
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/anatomy.css">
+<script>
+  /* Progressive enhancement flag. If main.js never boots (blocked, offline, error),
+     the safety timer removes the flag so nothing stays hidden. */
+  document.documentElement.className += ' js';
+  window.__jmSafety = setTimeout(function () {
+    if (!window.__jmReady) document.documentElement.classList.remove('js');
+  }, 3500);
+</script>
+</head>
+<body>
+<a class="skip" href="#work">Skip to work</a>
+
+<!-- Preloader -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pl-tl"><i class="rec-dot"></i> REC</div>
+  <div class="pl-tr">LOADING FOOTAGE</div>
+  <div class="pl-count" id="pl-count">000</div>
+  <div class="pl-bl">JHON MEDIA</div>
+  <div class="pl-br" data-tc="preloader">00:00:00:00</div>
+  <div class="pl-bar" id="pl-bar"></div>
+</div>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="hairgrid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="cursor" aria-hidden="true"><div class="cursor-ring"><span class="cursor-label"></span></div><div class="cursor-dot"></div></div>
+
+<!-- Nav -->
+<header class="nav" id="nav">
+  <a class="nav-mark" href="#top" data-cursor="link">Jhon Media</a>
+  <div class="nav-clock" aria-hidden="true"><i class="rec-dot"></i> <span data-clock="nav">00:00:00:00</span></div>
+  <!-- Clock timezone: Asia/Manila (placeholder — replace) — set in main.js CONFIG.timeZone -->
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#work" data-roll data-cursor="link" data-nav="work">Work</a>
+    <a href="#services" data-roll data-cursor="link" data-nav="services">Services</a>
+    <a href="#process" data-roll data-cursor="link" data-nav="process">Process</a>
+    <a href="#faq" data-roll data-cursor="link" data-nav="faq">FAQ</a>
+    <a class="nav-cta" href="#contact" data-roll data-magnetic data-cursor="link">Book a call</a>
+  </nav>
+  <button class="nav-menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-cursor="link">Menu</button>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="menu-top">
+    <span class="nav-mark">Jhon Media</span>
+    <button class="menu-close" id="menu-close" type="button">Close</button>
+  </div>
+  <nav class="menu-links" aria-label="Mobile">
+    <a href="#work"><span class="mline"><span>Work</span></span></a>
+    <a href="#services"><span class="mline"><span>Services</span></span></a>
+    <a href="#process"><span class="mline"><span>Process</span></span></a>
+    <a href="#faq"><span class="mline"><span>FAQ</span></span></a>
+    <a href="#contact"><span class="mline"><span>Book a call</span></span></a>
+  </nav>
+  <div class="menu-foot">
+    <a href="mailto:hello@jhonmedia.com">hello@jhonmedia.com</a>
+    <a href="https://www.tiktok.com/@jhonmedia" target="_blank" rel="noopener" aria-label="TikTok @jhonmedia (opens in a new tab)">TikTok @jhonmedia ↗</a>
+  </div>
+</div>
+
+<main id="main" aria-busy="true">
+
+<!-- [00] HERO -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="brackets" aria-hidden="true"><i class="bk bk-tl"></i><i class="bk bk-tr"></i><i class="bk bk-bl"></i><i class="bk bk-br"></i></div>
+  <div class="hero-labels label">
+    <span>[00] VIDEO EDITOR</span>
+    <span class="hero-rec" aria-hidden="true"><i class="rec-dot"></i> REC&nbsp;&nbsp;<span data-tc="hero">00:00:00:00</span></span>
+    <span class="hero-avail">AVAILABLE FOR Q4<!-- AVAILABLE · Q4 2026 (placeholder — replace) --></span>
+  </div>
+
+  <h1 class="hero-title mega" id="hero-title">
+    <span class="hline hl1" data-speed="0.9"><span class="hw">ADS</span> <span class="hw thin">that</span></span>
+    <span class="hline hl2" data-speed="0.95"><span class="hw thin">stop the</span> <span class="hw">THUMB.</span></span>
+    <span class="hline hl3" data-speed="1"><span class="hw">EDITED</span> <span class="hw thin">to</span> <span class="hw">SELL.</span></span>
+  </h1>
+
+  <div class="hero-row">
+    <p class="hero-intro h2 hero-fade">I edit performance ads for DTC brands. UGC, product demos, talking heads, motion text. Built for TikTok, Reels and Meta. Every cut has one job: keep the viewer watching until the offer.</p>
+    <div class="hero-ctas hero-fade">
+      <a class="btn btn-primary" href="#work" data-magnetic data-cursor="link"><span class="btn-in" data-roll>See the work</span></a>
+      <a class="btn btn-outline" href="#contact" data-magnetic data-cursor="link"><span class="btn-in" data-roll>Book a call</span></a>
+    </div>
+  </div>
+
+  <div class="scroll-cue label hero-fade" aria-hidden="true"><span>Scroll</span><i class="scroll-line"></i></div>
+
+  <div class="marquee hero-marquee" data-marquee data-speed="40" data-direction="1" data-velocity-flip data-hover="pause">
+    <div class="mq-track">
+      <div class="mq-group h1">
+        <span class="mq-b">UGC EDITS</span><span class="mq-dot">●</span>
+        <span class="mq-t">Hook-driven short form</span><span class="mq-dot">●</span>
+        <span class="mq-b">PRODUCT DEMOS</span><span class="mq-dot">●</span>
+        <span class="mq-t">Talking heads</span><span class="mq-dot">●</span>
+        <span class="mq-b">MOTION TEXT</span><span class="mq-dot">●</span>
+        <span class="mq-t">TikTok</span><span class="mq-dot">●</span>
+        <span class="mq-b">REELS</span><span class="mq-dot">●</span>
+        <span class="mq-t">Meta ads</span><span class="mq-dot">●</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- [01] WORK -->
+<section class="section work" id="work" aria-labelledby="work-title">
+  <div class="slabel label" aria-hidden="true"><span>[01]</span><span class="slabel-name">SELECTED WORK</span><span class="slabel-tc" data-in="00:00:08:00" data-out="00:00:42:12">TC 00:00:08:00 → 00:00:42:12</span></div>
+  <div class="work-head">
+    <h2 class="d1" id="work-title" data-split>SELECTED <span class="thin">work</span></h2>
+    <span class="work-count d2" id="work-count" aria-hidden="true">(09)</span>
+  </div>
+  <p class="work-sub muted" data-reveal>Real ads. Real spend behind them. Tap any one to watch it on TikTok.</p>
+  <div class="filters-wrap"><div class="filters label" id="filters" role="group" aria-label="Filter work by category"></div></div>
+  <ul class="grid" id="grid"></ul>
+  <p class="work-empty h2" id="work-empty" hidden>Nothing here yet. Check back soon.</p>
+  <noscript><p class="h2"><a class="ulink" href="https://www.tiktok.com/@jhonmedia" target="_blank" rel="noopener">Watch the work on TikTok @jhonmedia ↗</a></p></noscript>
+  <p class="work-more h2"><a class="ulink" id="work-more" href="https://www.tiktok.com/@jhonmedia" target="_blank" rel="noopener" data-cursor="view" aria-label="More on TikTok @jhonmedia (opens in a new tab)">More on TikTok @jhonmedia ↗</a></p>
+</section>
+
+<!-- [02] RESULTS -->
+<section class="section results alt" id="results" aria-labelledby="results-title">
+  <div class="slabel label" aria-hidden="true"><span>[02]</span><span class="slabel-name">RESULTS</span><span class="slabel-tc" data-in="00:00:42:12" data-out="00:00:51:00">TC 00:00:42:12 → 00:00:51:00</span></div>
+  <h2 class="h2 results-intro" id="results-title" data-split>Views are nice. These are the numbers I get judged on.</h2>
+  <div class="stats" id="stats">
+    <!-- All stats: placeholder — replace -->
+    <div class="stat">
+      <div class="stat-num d2" aria-label="38%"><span class="stat-val" data-count="38" aria-hidden="true">38</span><span class="stat-suf thin" aria-hidden="true">%</span></div>
+      <div class="label">AVG HOOK RATE</div>
+      <p class="small muted">3-second views ÷ impressions across Meta ads I've cut.</p>
+    </div>
+    <div class="stat">
+      <div class="stat-num d2" aria-label="400+"><span class="stat-val" data-count="400" aria-hidden="true">400</span><span class="stat-suf thin" aria-hidden="true">+</span></div>
+      <div class="label">ADS DELIVERED</div>
+      <p class="small muted">Finished, launched, not drafts.</p>
+    </div>
+    <div class="stat">
+      <div class="stat-num d2" aria-label="30+"><span class="stat-val" data-count="30" aria-hidden="true">30</span><span class="stat-suf thin" aria-hidden="true">+</span></div>
+      <div class="label">DTC BRANDS</div>
+      <p class="small muted">Skincare, supplements, apparel, home, pets.</p>
+    </div>
+    <div class="stat">
+      <div class="stat-num d2" aria-label="48h"><span class="stat-val" data-count="48" aria-hidden="true">48</span><span class="stat-suf thin" aria-hidden="true">h</span></div>
+      <div class="label">FIRST CUT</div>
+      <p class="small muted">Standard turnaround on a single ad.</p>
+    </div>
+  </div>
+  <p class="micro muted stats-note">Numbers from client ad accounts. Your results depend on offer, product and spend.</p>
+</section>
+
+<!-- [03] ANATOMY / TIMELINE (V2: docs/TIMELINE-V2.md; behaviour in assets/js/anatomy.js) -->
+<section class="section anatomy" id="anatomy" aria-labelledby="anatomy-title">
+  <div class="slabel label" aria-hidden="true"><span>[03]</span><span class="slabel-name">ANATOMY OF AN AD</span><span class="slabel-tc" data-in="00:00:51:00" data-out="00:01:21:00">TC 00:00:51:00 → 00:01:21:00</span></div>
+  <div class="an-head">
+    <h2 class="d1" id="anatomy-title" data-split>ANATOMY <span class="thin">of a</span> WINNER.</h2>
+    <p class="muted an-sub">A 30-second DTC ad, cut in front of you. <span id="an-verb">Scroll to scrub.</span></p>
+  </div>
+  <div class="an-scroll" id="an-scroll">
+    <div class="an-stage">
+      <div class="an-appbar micro muted" aria-hidden="true"><span><i class="rec-dot"></i> WINNER_V7 · SEQ 01</span><span>1080×1920 · 24 FPS · DUR 00:00:30:00</span></div>
+
+      <div class="an-viewer">
+        <p class="an-idx label muted" id="an-idx" aria-hidden="true">01 / 06 · 00:00 → 00:03</p>
+        <h3 class="an-title" id="an-title" aria-live="polite"><span class="thin">the</span><br>HOOK</h3>
+        <div class="an-mtc thin" id="an-mtc" aria-hidden="true">00:00:00:00</div>
+        <div class="an-spark" id="an-spark" aria-hidden="true"></div>
+        <p class="an-body" id="an-body">Three seconds. One idea. A pattern break, a bold claim or a result shown first. If they don't stop here, nothing after this matters.</p>
+        <p class="label muted an-stat" id="an-stat">TARGET: 30%+ HOOK RATE</p>
+      </div>
+
+      <div class="pm" id="pm" aria-hidden="true">
+        <div class="pm-bar micro"><span>PROGRAM · SEQ 01</span><span class="pm-shuttle" id="pm-shuttle">❚❚</span><span class="an-tc" id="an-tc">00:00:00:00</span></div>
+        <div class="pm-well" id="pm-well"></div>
+        <div class="pm-transport micro muted"><span class="pm-glyphs"><i class="g-start"></i><i class="g-rev"></i><i class="g-play"></i><i class="g-end"></i></span><span>FIT 1/1</span></div>
+      </div>
+      <button type="button" class="pm-play label" id="pm-play" hidden>▶ PLAY <span class="muted">00:30</span></button>
+
+      <div class="an-side">
+        <div class="rt" id="rt" aria-hidden="true"></div>
+        <ol class="an-chapters" id="an-chapters" aria-label="Beats">
+        <li><button type="button" data-beat="0" data-cursor="link"><span class="label">01</span> <span class="ch-n">HOOK</span><span class="ch-t micro muted" aria-hidden="true">00:00</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="1" data-cursor="link"><span class="label">02</span> <span class="ch-n">PROBLEM</span><span class="ch-t micro muted" aria-hidden="true">00:03</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="2" data-cursor="link"><span class="label">03</span> <span class="ch-n">DEMO</span><span class="ch-t micro muted" aria-hidden="true">00:08</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="3" data-cursor="link"><span class="label">04</span> <span class="ch-n">PROOF</span><span class="ch-t micro muted" aria-hidden="true">00:16</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="4" data-cursor="link"><span class="label">05</span> <span class="ch-n">OFFER</span><span class="ch-t micro muted" aria-hidden="true">00:23</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-beat="5" data-cursor="link"><span class="label">06</span> <span class="ch-n">CTA</span><span class="ch-t micro muted" aria-hidden="true">00:27</span><span class="ch-p" aria-hidden="true"><i></i></span></button></li>
+        </ol>
+      </div>
+
+      <div class="tl-box">
+        <div class="tl-tools micro muted" id="tl-tools" aria-hidden="true"></div>
+        <div class="tl" id="tl" tabindex="0" role="region" aria-label="Ad timeline">
+          <div class="tl-labels micro" aria-hidden="true"><span></span><span>V2</span><span>T1</span><span>V1</span><span class="tl-a1l">A1<i class="mtr"><b id="mtr-l"></b><b id="mtr-r"></b><s id="mtr-pk"></s></i></span></div>
+          <div class="tl-window">
+            <div class="tl-scroller" id="tl-scroller">
+              <span class="tl-spacer"></span>
+              <div class="tl-track" id="tl-track">
+                <div class="tl-ruler" id="tl-ruler" aria-hidden="true">
+                  <span style="left:0%">00:00</span><span style="left:16.6667%">00:05</span><span style="left:33.3333%">00:10</span><span style="left:50%">00:15</span><span style="left:66.6667%">00:20</span><span style="left:83.3333%">00:25</span><span style="left:100%">00:30</span>
+                </div>
+                <div class="tl-lane tl-v2" aria-hidden="true">
+                <span class="tx" style="left:0%;width:5%">"Stop scrolling if…"</span>
+                <span class="tx" style="left:26.6667%;width:6.6667%">CALLOUTS</span>
+                <span class="tx" style="left:40%;width:8%">COMPARE</span>
+                <span class="tx" style="left:53.3333%;width:23.3333%">REVIEWS</span>
+                <span class="tx" style="left:76.6667%;width:13.3333%">$ OFFER CARD</span>
+                <span class="tx" style="left:90%;width:10%">TAP ↓</span>
+                </div>
+                <div class="tl-lane tl-t1" id="tl-t1" aria-hidden="true"></div>
+                <div class="tl-lane tl-v1" id="tl-v1">
+                <button type="button" class="clip" data-beat="0" style="left:0%;width:10%" aria-label="Jump to the hook"><span class="clip-l">HOOK</span></button>
+                <button type="button" class="clip" data-beat="1" style="left:10%;width:16.6667%" aria-label="Jump to the problem"><span class="clip-l">PROBLEM</span></button>
+                <button type="button" class="clip" data-beat="2" style="left:26.6667%;width:26.6667%" aria-label="Jump to the demo"><span class="clip-l">DEMO</span></button>
+                <button type="button" class="clip" data-beat="3" style="left:53.3333%;width:23.3333%" aria-label="Jump to the proof"><span class="clip-l">PROOF</span></button>
+                <button type="button" class="clip" data-beat="4" style="left:76.6667%;width:13.3333%" aria-label="Jump to the offer"><span class="clip-l">OFFER</span></button>
+                <button type="button" class="clip" data-beat="5" style="left:90%;width:10%" aria-label="Jump to the CTA"><span class="clip-l">CTA</span></button>
+                </div>
+                <div class="tl-lane tl-a1" aria-hidden="true">
+                  <div class="wave" id="wave"></div>
+                  <div class="wave-mask" id="wave-mask"><div class="wave wave-lit" id="wave-lit"></div></div>
+                </div>
+                <div class="tl-playhead" id="tl-playhead" aria-hidden="true"><i></i><span class="tl-trail" id="tl-trail"></span></div>
+                <div class="tl-razor" id="tl-razor" aria-hidden="true"><span class="rz-a"></span><span class="rz-b"></span><span class="rz-blade"></span><span class="rz-l micro" id="rz-l">CUT 00:00:03:00</span></div>
+              </div>
+              <span class="tl-spacer"></span>
+            </div>
+            <div class="tl-center" aria-hidden="true"><i></i></div>
+          </div>
+        </div>
+      </div>
+
+      <ol class="beats-list" id="beats-list">
+        <li><span class="label muted">01 · 00:00 → 00:03</span><h3 class="h1">The hook</h3><p>Three seconds. One idea. A pattern break, a bold claim or a result shown first. If they don't stop here, nothing after this matters.</p><p class="label muted">TARGET: 30%+ HOOK RATE</p></li>
+        <li><span class="label muted">02 · 00:03 → 00:08</span><h3 class="h1">The problem</h3><p>Name the exact thing that annoys them. Their words, not the brand's. This is where they decide the ad is about them.</p><p class="label muted">CUT EVERY 1.5 TO 2s</p></li>
+        <li><span class="label muted">03 · 00:08 → 00:16</span><h3 class="h1">The demo</h3><p>Show the product doing the job. Hands, close-ups, before and after. No b-roll for the sake of b-roll.</p><p class="label muted">SHOW, DON'T CLAIM</p></li>
+        <li><span class="label muted">04 · 00:16 → 00:23</span><h3 class="h1">The proof</h3><p>Reviews, numbers, a second face. Stack enough proof that the price stops being the question.</p><p class="label muted">REDUCE DOUBT</p></li>
+        <li><span class="label muted">05 · 00:23 → 00:27</span><h3 class="h1">The offer</h3><p>What they get, what it costs, why now. Said once, clearly, on screen and in voice.</p><p class="label muted">ONE OFFER. NO MENU.</p></li>
+        <li><span class="label muted">06 · 00:27 → 00:30</span><h3 class="h1">The CTA</h3><p>Tell them what to tap. Then end the ad. Dead air at the end costs you the loop.</p><p class="label muted">END ON THE ACTION</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- [04] SERVICES -->
+<section class="section services" id="services" aria-labelledby="services-title">
+  <div class="slabel label" aria-hidden="true"><span>[04]</span><span class="slabel-name">SERVICES</span><span class="slabel-tc" data-in="00:01:21:00" data-out="00:01:38:00">TC 00:01:21:00 → 00:01:38:00</span></div>
+  <h2 class="d1" id="services-title" data-split>WHAT <span class="thin">I</span> CUT.</h2>
+  <ul class="svc-list">
+    <li class="svc" data-reveal>
+      <span class="svc-idx label">01</span>
+      <h3 class="svc-name h1">UGC ad edits</h3>
+      <div class="svc-desc"><p>You send raw creator footage. I find the best 3 seconds and build the ad around it. Captions, pacing, b-roll, music.</p><p class="label">3 HOOK VARIATIONS PER AD · 9:16 + 4:5 · CAPTIONED</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </li>
+    <li class="svc" data-reveal>
+      <span class="svc-idx label">02</span>
+      <h3 class="svc-name h1">Hook testing packs</h3>
+      <div class="svc-desc"><p>One body, many openers. The fastest way to find a winner without reshooting. Swap the first 3 seconds, keep everything else.</p><p class="label">5 TO 10 HOOKS ON ONE BODY · NAMED FOR ADS MANAGER</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </li>
+    <li class="svc" data-reveal>
+      <span class="svc-idx label">03</span>
+      <h3 class="svc-name h1">Product demos</h3>
+      <div class="svc-desc"><p>Close-ups, hands, before and after. The product does the selling. I cut it so nobody has to read a spec sheet.</p><p class="label">15s + 30s CUTS · TEXT CALLOUTS · SOUND DESIGN</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </li>
+    <li class="svc" data-reveal>
+      <span class="svc-idx label">04</span>
+      <h3 class="svc-name h1">Talking heads</h3>
+      <div class="svc-desc"><p>Founder or expert to camera. Cut the ums, tighten the argument, punch in on the lines that land. Keeps the person real. Keeps it moving.</p><p class="label">JUMP CUTS · ZOOMS · ANIMATED CAPTIONS</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </li>
+    <li class="svc" data-reveal>
+      <span class="svc-idx label">05</span>
+      <h3 class="svc-name h1">Motion text ads</h3>
+      <div class="svc-desc"><p>No creator footage yet? Kinetic type, product shots and a strong script. Cheap to make, easy to iterate.</p><p class="label">TYPE-LED · BRAND FONTS + COLORS · 6s TO 30s</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </li>
+    <li class="svc" data-reveal>
+      <span class="svc-idx label">06</span>
+      <h3 class="svc-name h1">Iteration on winners</h3>
+      <div class="svc-desc"><p>Your best ad is fatiguing. I cut new versions from what's already working: new hooks, new order, new first frame. Same proof.</p><p class="label">WEEKLY BATCHES · BUILT FROM YOUR AD DATA</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </li>
+  </ul>
+</section>
+
+<!-- [05] PROCESS -->
+<section class="section process alt" id="process" aria-labelledby="process-title">
+  <div class="slabel label" aria-hidden="true"><span>[05]</span><span class="slabel-name">PROCESS</span><span class="slabel-tc" data-in="00:01:38:00" data-out="00:01:52:00">TC 00:01:38:00 → 00:01:52:00</span></div>
+  <h2 class="d1" id="process-title" data-split><span class="thin">How it</span> WORKS.</h2>
+  <div class="pr-scroll" id="pr-scroll">
+    <div class="pr-stage">
+      <div class="pr-progress label" aria-hidden="true"><span id="pr-step">STEP 01 / 05</span><span class="pr-bar"><i id="pr-bar"></i></span></div>
+      <ol class="pr-row" id="pr-row">
+        <li class="pr-panel">
+          <span class="pr-num mega" aria-hidden="true">01</span>
+          <h3 class="h1">Brief</h3>
+          <p>You send the product, the offer, the footage and what's running now. If you have ad account numbers, send those too. I want to know what's already winning.</p>
+          <p class="label muted">DAY 0</p>
+        </li>
+        <li class="pr-panel">
+          <span class="pr-num mega" aria-hidden="true">02</span>
+          <h3 class="h1">Hooks first</h3>
+          <p>I pull 3 to 5 hook options before I touch the body. We agree on the angle. This saves a full revision round.</p>
+          <p class="label muted">DAY 1</p>
+        </li>
+        <li class="pr-panel">
+          <span class="pr-num mega" aria-hidden="true">03</span>
+          <h3 class="h1">First cut</h3>
+          <p>Full ad, captioned, sound designed, exported for every placement you need.</p>
+          <p class="label muted">48 HOURS<!-- placeholder — replace --></p>
+        </li>
+        <li class="pr-panel">
+          <span class="pr-num mega" aria-hidden="true">04</span>
+          <h3 class="h1">Revisions</h3>
+          <p>Two rounds included. Notes in Frame.io or a Loom. Specific notes get specific fixes.</p>
+          <p class="label muted">24 HOURS PER ROUND</p>
+        </li>
+        <li class="pr-panel">
+          <span class="pr-num mega" aria-hidden="true">05</span>
+          <h3 class="h1">Launch and iterate</h3>
+          <p>You launch. We look at hook rate, hold rate and CPA after 3 to 5 days. The next batch is built from what the data says, not what we like.</p>
+          <p class="label muted">ONGOING</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- BRANDS (breather, no label) -->
+<section class="brands" aria-label="Brands I've cut for">
+  <p class="label muted brands-label">BRANDS I'VE CUT FOR</p>
+  <div class="marquee brands-row" data-marquee data-speed="55" data-direction="1" data-hover="slow" data-cursor="view">
+    <div class="mq-track"><div class="mq-group d2">
+      <span class="mq-b">THE SUCCESSFUL MAN JOURNAL</span><i class="mq-sep"></i><span class="mq-b">SOLACE BAND</span><i class="mq-sep"></i><span class="mq-b">THE HONESTDOG COMPANY</span><i class="mq-sep"></i>
+    </div></div>
+  </div>
+  <div class="marquee brands-row" data-marquee data-speed="55" data-direction="-1" data-hover="slow" data-cursor="view">
+    <div class="mq-track"><div class="mq-group d2">
+      <span class="mq-t">SOLACE BAND</span><i class="mq-sep"></i><span class="mq-t">THE HONESTDOG COMPANY</span><i class="mq-sep"></i><span class="mq-t">THE SUCCESSFUL MAN JOURNAL</span><i class="mq-sep"></i>
+    </div></div>
+  </div>
+</section>
+
+<!-- [06] TESTIMONIALS -->
+<section class="section testi" id="clients" aria-labelledby="testi-title">
+  <div class="slabel label" aria-hidden="true"><span>[06]</span><span class="slabel-name">CLIENTS</span><span class="slabel-tc" data-in="00:01:52:00" data-out="00:02:04:00">TC 00:01:52:00 → 00:02:04:00</span></div>
+  <h2 class="sr-only" id="testi-title">What clients say</h2>
+  <div class="tq-wrap" id="tq-wrap" aria-live="polite" data-cursor="drag">
+    <span class="tq-mark mega thin" aria-hidden="true">“</span>
+    <!-- All testimonials: placeholder — replace with real quotes, with permission -->
+    <figure class="tq">
+      <blockquote class="h1 tq-quote"><p>We sent Jhon 40 minutes of creator footage. He sent back 6 ads and 18 hooks in two days. Two of them are still our best performers three months later.</p></blockquote>
+      <figcaption class="label"><strong>MARIA C.</strong> <span class="muted">· GROWTH LEAD, SOLACE BAND</span></figcaption>
+    </figure>
+    <figure class="tq">
+      <blockquote class="h1 tq-quote"><p>He asks for the numbers. Hook rate, hold rate, CPA. Most editors don't. That's why his second batch beat the first.</p></blockquote>
+      <figcaption class="label"><strong>DANIEL R.</strong> <span class="muted">· FOUNDER, THE SUCCESSFUL MAN JOURNAL</span></figcaption>
+    </figure>
+    <figure class="tq">
+      <blockquote class="h1 tq-quote"><p>Fast, clear, no hand-holding. Notes on Monday, new cuts Tuesday morning.</p></blockquote>
+      <figcaption class="label"><strong>PRIYA S.</strong> <span class="muted">· MEDIA BUYER, THE HONESTDOG COMPANY</span></figcaption>
+    </figure>
+  </div>
+  <div class="tq-bar">
+    <div class="tq-count label"><span id="tq-count">01 / 03</span><span class="tq-prog"><i id="tq-prog"></i></span></div>
+    <div class="tq-nav label">
+      <button type="button" id="tq-prev" data-magnetic data-cursor="link"><span class="btn-in" data-roll>Prev</span></button>
+      <button type="button" id="tq-next" data-magnetic data-cursor="link"><span class="btn-in" data-roll>Next</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- [07] FAQ -->
+<section class="section faq alt" id="faq" aria-labelledby="faq-title">
+  <div class="slabel label" aria-hidden="true"><span>[07]</span><span class="slabel-name">FAQ</span><span class="slabel-tc" data-in="00:02:04:00" data-out="00:02:12:00">TC 00:02:04:00 → 00:02:12:00</span></div>
+  <div class="faq-grid">
+    <div class="faq-head">
+      <h2 class="d1" id="faq-title" data-split>QUEST<span class="thin">ions</span></h2>
+      <p class="muted">Still unsure? Email me. I reply within 24 hours.</p>
+    </div>
+    <div class="faq-list" id="faq-list">
+      <details open><summary><h3 class="h2">What do you need from me to start?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>Raw footage, your product page, the offer, and any ads running now. Ad account screenshots help a lot. If I can see what's winning, I can build on it instead of guessing.</p></div></details>
+      <details><summary><h3 class="h2">Do you write scripts or only edit?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>Mostly edit. I'll write hooks and on-screen text on every project, and I can outline a script for creators if you need one. Full scripting is quoted separately.</p></div></details>
+      <details><summary><h3 class="h2">How fast is turnaround?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>First cut in 48 hours for a single ad. Batches take 3 to 5 days. Revisions come back within 24 hours.<!-- placeholder — replace --></p></div></details>
+      <details><summary><h3 class="h2">How many revisions do I get?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>Two rounds per batch. Clear, specific notes get fixed fast. If the brief changes halfway through, we talk scope.</p></div></details>
+      <details><summary><h3 class="h2">Which platforms do you edit for?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>TikTok, Instagram Reels, Facebook and Instagram feed, YouTube Shorts. I export 9:16, 4:5 and 1:1, named so your media buyer can upload without asking what's what.</p></div></details>
+      <details><summary><h3 class="h2">Do you guarantee results?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>No. Nobody honest can. Results depend on the offer, the product, the audience and the spend. What I guarantee: every ad is built to hold attention and get to the offer. And I'll use your data to make the next batch better.</p></div></details>
+      <details><summary><h3 class="h2">What software do you use?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>Premiere Pro and After Effects. CapCut when a native TikTok look is the goal. Frame.io for review.</p></div></details>
+      <details><summary><h3 class="h2">How do I pay?</h3><span class="plus" aria-hidden="true"></span></summary><div class="faq-a"><p>50% upfront, 50% on delivery for batches. Retainers are paid monthly in advance. Wise, PayPal or bank transfer.<!-- placeholder — replace --></p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- [08] CONTACT -->
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="slabel label" aria-hidden="true"><span>[08]</span><span class="slabel-name">CONTACT</span><span class="slabel-tc" data-in="00:02:12:00" data-out="00:02:18:00">TC 00:02:12:00 → 00:02:18:00</span></div>
+  <p class="label contact-rec"><i class="rec-dot"></i> REC&nbsp;&nbsp;NEXT AD STARTS HERE</p>
+  <h2 class="mega contact-title" id="contact-title" data-split data-parallax>GOT <span class="thin">footage?</span><br><span class="thin">Let's</span> CUT IT.</h2>
+  <p class="h2 contact-sub" data-reveal>Send me the product, the offer and what's running now. I'll reply within 24 hours with how I'd approach it.</p>
+  <div class="contact-mail">
+    <a class="d2 ulink ulink-dark" id="contact-email" href="mailto:hello@jhonmedia.com" data-cursor="link">hello@jhonmedia.com</a>
+    <button type="button" class="copy-btn label" id="copy-btn" data-cursor="link">Copy</button>
+  </div>
+  <div class="contact-ctas">
+    <!-- Booking URL: placeholder — replace -->
+    <a class="btn btn-dark" href="https://cal.com/jhonmedia" target="_blank" rel="noopener" data-magnetic data-cursor="link" aria-label="Book a 15-min call (opens in a new tab)"><span class="btn-in" data-roll>Book a 15-min call ↗</span></a>
+    <a class="btn btn-outline-dark" href="https://www.tiktok.com/@jhonmedia" target="_blank" rel="noopener" data-magnetic data-cursor="link" aria-label="DM on TikTok (opens in a new tab)"><span class="btn-in" data-roll>DM on TikTok ↗</span></a>
+  </div>
+  <p class="small contact-resp">Usually replies in under 24 hours. Based in the Philippines, works with US, UK and AU brands.<!-- placeholder — replace --></p>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="footer">
+  <div class="ft-cols">
+    <div><p class="label muted">CONTACT</p><a class="ulink" href="mailto:hello@jhonmedia.com">hello@jhonmedia.com</a><a class="ulink" href="#contact">Book a call</a></div>
+    <!-- Social URLs: placeholder — replace -->
+    <div><p class="label muted">SOCIAL</p><a class="ulink" href="https://www.tiktok.com/@jhonmedia" target="_blank" rel="noopener" aria-label="TikTok (opens in a new tab)">TikTok ↗</a><a class="ulink" href="https://www.instagram.com/jhonmedia" target="_blank" rel="noopener" aria-label="Instagram (opens in a new tab)">Instagram ↗</a><a class="ulink" href="https://www.linkedin.com/in/jhonmedia" target="_blank" rel="noopener" aria-label="LinkedIn (opens in a new tab)">LinkedIn ↗</a></div>
+    <div><p class="label muted">SITE</p><a class="ulink" href="#work">Work</a><a class="ulink" href="#services">Services</a><a class="ulink" href="#process">Process</a><a class="ulink" href="#faq">FAQ</a></div>
+    <div><p class="label muted">LOCAL TIME</p><p class="ft-clock" aria-hidden="true"><span data-clock="footer">14:32</span> PHT<!-- placeholder timezone — replace --></p></div>
+  </div>
+  <div class="ft-legal micro muted">
+    <span>© 2026 Jhon Media</span>
+    <span>Edited, not templated.</span>
+    <a href="#top" id="to-top" data-magnetic data-cursor="link"><span class="btn-in">Back to top ↑</span></a>
+  </div>
+</footer>
+
+<!-- Lightbox (used when WORK_CONFIG.mode = "lightbox") -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Video" hidden>
+  <button type="button" class="lb-close label" id="lb-close">Close</button>
+  <div class="lb-inner">
+    <div class="lb-frame" id="lb-frame" data-cursor="hidden"></div>
+    <div class="lb-info">
+      <p class="label muted" id="lb-brand"></p>
+      <h3 class="h1" id="lb-title"></h3>
+      <p class="label" id="lb-format"></p>
+      <p class="d2" id="lb-metric"></p>
+      <a class="ulink" id="lb-link" href="#" target="_blank" rel="noopener">Open on TikTok ↗</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/work.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/anatomy.js"></script>
+</body>
+</html>
