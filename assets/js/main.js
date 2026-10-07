@@ -596,6 +596,24 @@
     });
   }
 
+  /* ---------- Hero headline fit guard: never clip a line ---------- */
+  function initHeroFit() {
+    var h = $('.hero-title'); if (!h) return;
+    var lines = $$('.hline', h);
+    var fit = function () {
+      h.style.fontSize = '';
+      var cur = parseFloat(getComputedStyle(h).fontSize), ratio = 1;
+      lines.forEach(function (l) {
+        var ws = $$('.hw', l); if (!ws.length) return;
+        var tw = ws[ws.length - 1].getBoundingClientRect().right - ws[0].getBoundingClientRect().left;
+        var avail = l.clientWidth - parseFloat(getComputedStyle(l).paddingLeft);
+        if (tw > 0) ratio = Math.min(ratio, avail / tw);
+      });
+      if (ratio < 1) h.style.fontSize = (cur * ratio * 0.985).toFixed(2) + 'px';
+    };
+    fit(); measures.unshift(fit);
+  }
+
   /* ---------- Counters (3.4, 4.9) ---------- */
   function countUp(node, to, dur, dec, cb) {
     var s = performance.now();
@@ -892,6 +910,7 @@
   setFlags();
   safe('timecodes', initTimecodes);
   safe('grain', initGrain);
+  safe('heroFit', initHeroFit);
   safe('work', initWork);
   safe('roll', initRoll);
   safe('reveals', initReveals);
