@@ -47,7 +47,9 @@
 .rt-dot { position: absolute; left: -2.5px; top: -2.5px; width: 5px; height: 5px; background: #fff; will-change: transform; }
 .rt-tick { position: absolute; bottom: 0; width: 1px; height: 6px; background: #fff; opacity: .3; }
 .rt-tick.is-flash { animation: rtick 220ms linear; }
+.rt-tick.is-flash2 { animation: rtick2 220ms linear; }
 @keyframes rtick { from { opacity: 1; } to { opacity: .3; } }
+@keyframes rtick2 { from { opacity: 1; } to { opacity: .3; } }
 .rt-legend { display: flex; gap: var(--s-5); margin-top: var(--s-3); }
 .rt-legend i { display: inline-block; width: 18px; height: 0; border-top: 1px solid #fff; vertical-align: middle; margin-right: 6px; }
 .rt-legend i.d { border-top: 1px dashed var(--c-mute); }
@@ -69,13 +71,13 @@
   position: relative; border-bottom: 1px solid var(--c-ink-3);
   background: repeating-linear-gradient(90deg, var(--c-ink-3) 0 1px, transparent 1px calc(100% / 30)) bottom / 100% 6px no-repeat;
 }
-.tl-ruler > span { position: absolute; top: 2px; font-size: var(--t-label); letter-spacing: .06em; color: var(--c-mute); transform: translateX(10px); font-variant-numeric: tabular-nums; }
+.tl-ruler > span { position: absolute; top: 9px; z-index: 1; padding-right: 3px; background: var(--c-black); line-height: 14px; font-size: var(--t-label); letter-spacing: .06em; color: var(--c-mute); transform: translateX(10px); font-variant-numeric: tabular-nums; }
 .tl-ruler > span:last-of-type { transform: translateX(-100%) translateX(-4px); }
 .rb { position: absolute; top: 0; width: 5px; height: 8px; margin-left: -2px; background: #fff; }
 .rb::after { content: ""; position: absolute; left: 2px; top: 8px; width: 1px; height: 16px; background: #fff; opacity: .5; }
 .tl-lane { position: relative; }
-.tx, .clip { position: absolute; top: 0; bottom: 0; overflow: hidden; white-space: nowrap; font-size: var(--t-label); letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: center; }
-.tx { top: 3px; bottom: 3px; padding: 0 6px; border: 1px solid var(--c-ink-3); background: var(--c-ink-1); color: var(--c-mute); box-shadow: inset -1px 0 0 var(--c-black); }
+.tx, .clip { position: absolute; top: 0; bottom: 0; overflow: clip; /* clip, not hidden: hidden would make each clip a scroll container and steal the strip's snap points */ white-space: nowrap; font-size: var(--t-label); letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: center; }
+.tx { display: block; line-height: 20px; text-overflow: ellipsis; top: 3px; bottom: 3px; padding: 0 6px; border: 1px solid var(--c-ink-3); background: var(--c-ink-1); color: var(--c-mute); box-shadow: inset -1px 0 0 var(--c-black); }
 .t1w { position: absolute; top: 4px; bottom: 4px; background: var(--c-ink-2); box-shadow: inset -1px 0 0 var(--c-ink-0); }
 .t1w.is-done { background: var(--c-ink-3); }
 .t1w.is-on { background: #fff; }
@@ -83,11 +85,14 @@
 .clip + .clip { border-left-color: var(--c-black); }
 .clip.is-played { background: var(--c-ink-3); color: #fff; }
 .clip.is-active { outline: 1px solid #fff; outline-offset: -1px; color: #fff; z-index: 1; }
-.clip-l { position: relative; z-index: 1; padding-left: 6px; pointer-events: none; }
-.has-subs .clip-l { padding-left: 32px; }
-.sub { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--c-black); pointer-events: none; }
+/* Beat label: a solid tab across the top of the clip, above the thumbnails, ellipsized to the clip */
+.clip-l { position: absolute; left: 0; top: 0; z-index: 2; max-width: 100%; height: 14px; line-height: 14px; padding: 0 6px; font-size: 11px; background: var(--c-ink-2); pointer-events: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clip.is-played .clip-l, .clip.is-active .clip-l { background: var(--c-ink-3); }
+.anatomy:not(.is-scrub):not(.is-strip) .clip-l { background: var(--c-ink-3); }
+.sub.no-th .th { display: none; }
+.sub { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; overflow: clip; border-left: 1px solid var(--c-black); pointer-events: none; }
 .sub:first-child { border-left: 0; }
-.th { position: absolute; left: 4px; top: 3px; width: 22px; height: 40px; background: var(--c-ink-1); border: 1px solid var(--c-ink-3); }
+.th { position: absolute; left: 4px; top: 16px; width: 17px; height: 30px; background: var(--c-ink-1); border: 1px solid var(--c-ink-3); }
 .th svg { width: 100%; height: 100%; display: block; }
 .kf { position: absolute; bottom: 2px; width: 7px; height: 7px; margin-left: -3.5px; border: 1px solid #fff; transform: rotate(45deg); background: var(--c-black); z-index: 2; pointer-events: none; }
 .kf i { position: absolute; inset: 0; background: #fff; opacity: 0; }
@@ -269,3 +274,22 @@
   .anatomy.is-strip .pm { width: min(40vw, 300px); }
   .anatomy.is-strip .an-spark .rt-plot { height: 56px; }
 }
+
+/* Close-up zoom stays inside action-safe so HUD overlays read on top */
+.scr .zclip { clip-path: inset(24px 13.5px); }
+/* Small monitor (k < .8, e.g. 1024x768): 11px floor for text that matters, decorative labels hidden */
+.pm-frame .scr .sm { font-size: max(var(--b, 9px), calc(11px / var(--k, 1))) !important; letter-spacing: 0 !important; }
+.pm-frame.pm-small .scr .dec, .pm-frame.pm-small .scr .sh { display: none !important; }
+.pm-frame.pm-small .scr .befl { top: 72px !important; }
+.pm-frame.pm-small .scr .aftl { top: 98px !important; }
+.pm-frame .scr .chip { height: auto; line-height: 1.3; }
+.pm-frame.pm-small .scr .chip { top: 40px !important; }
+/* second, identical set so the loupe restarts without a forced reflow */
+.tl-razor.is-run2 { animation: rzbox2 570ms linear forwards; }
+.tl-razor.is-run2 .rz-blade { animation: rzblade2 570ms steps(1, end) forwards; }
+.tl-razor.is-run2 .rz-a { animation: rza2 570ms steps(1, end) forwards; }
+.tl-razor.is-run2 .rz-b { animation: rzb2 570ms steps(1, end) forwards; }
+@keyframes rzbox2 { 0%, 73% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes rzblade2 { 0% { transform: scaleY(0); } 7.3% { transform: scaleY(.33); } 14.6% { transform: scaleY(.66); } 21.9%, 100% { transform: scaleY(1); } }
+@keyframes rza2 { 0%, 29% { transform: none; } 29.2%, 100% { transform: translateX(-3px); } }
+@keyframes rzb2 { 0%, 29% { transform: none; } 29.2%, 100% { transform: translateX(3px); } }

@@ -715,3 +715,5 @@ html.menu-open .nav { visibility: hidden; }
   .faq-head .d1 { font-size: clamp(3rem, 7.2vw, 9rem); }
   .faq-list { grid-column: 7 / 13; }
 }
+.process.is-pinned .d1 { margin-bottom: 0; }
+.process.is-pinned .pr-stage { padding-top: var(--rh-content); } /* 64px heading → progress bar; the nav hides on scroll-down while pinned */

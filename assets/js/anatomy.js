@@ -176,7 +176,7 @@
   var INK0 = '#0a0a0a', INK1 = '#141414', INK2 = '#1f1f1f', INK3 = '#2a2a2a', HI = '#3a3a3a', MUTE = '#8a8a8a';
   function box(p, l, t, w, h, bg, extra) { return mk(p, '', 'left:' + l + 'px;top:' + t + 'px;width:' + w + 'px;height:' + h + 'px;background:' + bg + ';' + (extra || '')); }
   function circ(p, l, t, d, bg, extra) { return box(p, l, t, d, d, bg, 'border-radius:50%;' + (extra || '')); }
-  function txt(p, css, s) { return mk(p, '', css, s); }
+  function txt(p, css, s, cls) { return mk(p, cls || '', css, s); }
 
   function buildMon(still) {
     var M = { still: still };
@@ -232,14 +232,14 @@
     ['SHAMPOO', 'CREAM', 'VET $$'].forEach(function (lbl, j) {
       var c = box(pC, 30 + j * 73, 150, 64, 92, INK2, 'border:1px solid ' + INK3 + ';opacity:0');
       box(c, 10, 14, 42, 30, INK3);
-      txt(c, 'left:0;right:0;top:66px;font-size:9px;font-weight:700;text-align:center', lbl);
+      txt(c, 'left:0;right:0;top:66px;font-size:9px;font-weight:700;text-align:center', lbl, 'dec');
       var b1 = box(c, 30, 6, 2, 78, '#fff', 'transform:rotate(45deg) scaleY(0)');
       var b2 = box(c, 30, 6, 2, 78, '#fff', 'transform:rotate(-45deg) scaleY(0)');
       M.cards.push({ el: c, b1: b1, b2: b2 });
     });
     box(pb, 10, 140, 4, 160, INK3);
     M.meter = box(pb, 10, 140, 4, 160, '#fff', 'transform-origin:50% 100%');
-    txt(pb, 'left:-4px;top:118px;font-size:7px;transform:rotate(-90deg)', 'ITCH');
+    txt(pb, 'left:-4px;top:118px;font-size:7px;transform:rotate(-90deg)', 'ITCH', 'dec');
     mk(pb, 'vig');
 
     // --- DEMO ---
@@ -253,7 +253,7 @@
     M.label = mk(band, '', 'left:0;top:0;width:280px;height:56px');
     for (k = 0; k < 2; k++) {
       var pnl = mk(M.label, '', 'left:' + (k * 140) + 'px;top:0;width:140px;height:56px');
-      txt(pnl, 'left:8px;top:12px;font-size:8px;font-weight:700', 'ITCH RELIEF');
+      txt(pnl, 'left:8px;top:12px;font-size:8px;font-weight:700', 'ITCH RELIEF', 'dec');
       box(pnl, 8, 26, 50, 2, INK3); box(pnl, 8, 32, 40, 2, INK3); box(pnl, 8, 38, 46, 2, INK3);
       box(pnl, 76, 12, 54, 32, INK2);
     }
@@ -264,7 +264,7 @@
       box(g, -2, -2, 4, 4, '#fff');
       var a = c[3] * Math.PI / 180, ex = Math.cos(a) * 52, ey = Math.sin(a) * 52;
       var ln = box(g, 0, 0, 52, 1, '#fff', 'transform-origin:0 0;transform:rotate(' + c[3] + 'deg) scaleX(0)');
-      var lb = txt(g, 'top:' + (ey - 5) + 'px;font-size:9px;font-weight:700;white-space:nowrap;opacity:0;' + (ex < 0 ? 'right:' + (-ex + 4) + 'px' : 'left:' + (ex + 4) + 'px'), c[4]);
+      var lb = txt(g, 'top:' + (ey - 5) + 'px;font-size:9px;font-weight:700;white-space:nowrap;opacity:0;' + (ex < 0 ? 'right:' + (-ex + 4) + 'px' : 'left:' + (ex + 4) + 'px'), c[4], 'dec');
       M.callouts.push({ u: c[0], g: g, ln: ln, lb: lb, rot: c[3] });
     });
     var d2 = M.d2 = mk(dm, '', 'inset:0;background:linear-gradient(' + INK2 + ',' + INK0 + ')');
@@ -295,27 +295,27 @@
     var hd = box(M.div, -9, 230, 20, 20, '#fff');
     box(hd, 4, 7, 0, 0, 'transparent', 'border-right:5px solid #000;border-top:3px solid transparent;border-bottom:3px solid transparent');
     box(hd, 11, 7, 0, 0, 'transparent', 'border-left:5px solid #000;border-top:3px solid transparent;border-bottom:3px solid transparent');
-    txt(dz, 'left:16px;top:56px;font-size:9px;font-weight:700', 'BEFORE · DAY 1');
-    M.afterL = txt(dz, 'right:16px;top:56px;font-size:9px;font-weight:700;opacity:0', 'AFTER · DAY 14');
+    M.befL = txt(dz, 'left:16px;top:56px;font-size:9px;font-weight:700', 'BEFORE · DAY 1', 'sm befl');
+    M.afterL = txt(dz, 'right:16px;top:56px;font-size:9px;font-weight:700;opacity:0', 'AFTER · DAY 14', 'sm aftl');
     M.whip = [];
     for (k = 0; k < 8; k++) M.whip.push(box(dm, 20 + (k * 37) % 60, 70 + k * 46, 200 - (k % 3) * 40, 1, '#fff', 'opacity:0'));
     M.brk = mk(dm, '', 'left:105px;top:155px;width:90px;height:90px;transform-origin:50% 50%;opacity:0');
     box(M.brk, 0, 0, 16, 2, '#fff'); box(M.brk, 0, 0, 2, 16, '#fff'); box(M.brk, 74, 0, 16, 2, '#fff'); box(M.brk, 88, 0, 2, 16, '#fff');
     box(M.brk, 0, 88, 16, 2, '#fff'); box(M.brk, 0, 74, 2, 16, '#fff'); box(M.brk, 74, 88, 16, 2, '#fff'); box(M.brk, 88, 74, 2, 16, '#fff');
-    M.brkL = txt(dm, 'left:0;top:0;font-size:9px;white-space:nowrap;opacity:0', 'CLOSE-UP');
+    M.brkL = txt(dm, 'left:0;top:0;font-size:9px;white-space:nowrap;opacity:0', 'CLOSE-UP', 'sm');
     mk(dm, 'vig');
 
     // --- PROOF ---
     var pr = scene();
     mk(pr, '', 'inset:0;background:' + INK1);
     box(pr, 60, 390, 150, 50, INK2, 'border-radius:25px'); circ(pr, 40, 380, 40, INK2);
-    M.revH = txt(pr, 'left:0;right:0;top:70px;font-size:10px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums', '');
+    M.revH = txt(pr, 'left:0;right:0;top:70px;font-size:10px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;--b:10px', '', 'sm');
     M.revs = [];
     ['"Stopped scratching in a week."', '"She finally sleeps through the night."', '"Our vet asked what we changed."'].forEach(function (q, j) {
       var c = box(pr, 25, 290, 220, 64, INK2, 'border:1px solid ' + INK3 + ';opacity:0;transform-origin:50% 0');
       var st = [];
       for (var n = 0; n < 5; n++) st.push(txt(c, 'left:' + (10 + n * 12) + 'px;top:10px;font-size:10px;opacity:.2', '★'));
-      txt(c, 'left:10px;right:34px;top:30px;font-size:11px;line-height:1.2;text-transform:none;font-weight:400', q);
+      txt(c, 'left:10px;right:34px;top:30px;font-size:11px;line-height:1.2;text-transform:none;font-weight:400', q, 'dec');
       if (j === 2) circ(c, 190, 8, 20, HI);
       M.revs.push({ el: c, st: st, u: [.04, .32, .60][j] });
     });
@@ -327,7 +327,7 @@
     txt(of, 'left:0;right:0;top:118px;text-align:center;font-size:40px;font-weight:200;color:' + MUTE, '$49');
     M.strike = box(of, 92, 138, 86, 2, '#fff', 'transform-origin:0 50%;transform:scaleX(0)');
     M.p29 = txt(of, 'left:0;right:0;top:182px;text-align:center;font-size:96px;font-weight:700;letter-spacing:-0.04em;opacity:0', '$29');
-    M.offT = txt(of, 'left:0;right:0;top:312px;text-align:center;font-size:12px;font-weight:700;opacity:0', '30% OFF. TODAY ONLY.');
+    M.offT = txt(of, 'left:0;right:0;top:312px;text-align:center;font-size:12px;font-weight:700;opacity:0;--b:12px', '30% OFF. TODAY ONLY.', 'sm');
     mk(of, 'vig');
 
     // --- CTA ---
@@ -340,7 +340,7 @@
     M.arrow = txt(ct, 'left:0;right:0;top:322px;text-align:center;font-size:18px', '↓');
     M.finger = circ(ct, 0, 0, 24, 'rgba(255,255,255,.25)', 'border:1px solid #fff');
     M.black = mk(ct, '', 'inset:0;background:#000;opacity:0');
-    M.loop = txt(ct, 'left:0;right:0;top:236px;text-align:center;font-size:9px;opacity:0', '↺ LOOP');
+    M.loop = txt(ct, 'left:0;right:0;top:236px;text-align:center;font-size:9px;opacity:0', '↺ LOOP', 'sm');
 
     // --- Captions ---
     var cap = mk(scr, 'cap');
@@ -369,20 +369,20 @@
     var hatch = 'repeating-linear-gradient(45deg,rgba(255,255,255,.25) 0 1px,transparent 1px 6px)';
     var ui1 = box(gd, 222, 250, 40, 170, hatch, ''); ui1.className = 'ui';
     var ui2 = box(gd, 13, 404, 244, 48, hatch, ''); ui2.className = 'ui';
-    txt(ui1, 'left:3px;top:3px;font-size:7px', 'UI');
+    txt(ui1, 'left:3px;top:3px;font-size:7px', 'UI', 'dec');
 
     // --- HUD ---
     var hud = mk(scr, 'hud');
-    M.rec = txt(hud, 'left:12px;top:12px;font-weight:700', ''); M.rec.innerHTML = '<i class="rec-dot"></i>REC';
+    M.rec = txt(hud, 'left:12px;top:12px;font-weight:700', '', 'sm'); M.rec.innerHTML = '<i class="rec-dot"></i>REC';
     M.shut = txt(hud, 'left:44px;top:12px', '❚❚'); M.shut.className = 'sh';
-    M.tc = txt(hud, 'right:12px;top:12px', '00:00:00:00'); M.tc.className = 'tc';
-    M.chip = txt(hud, 'left:12px;top:30px', ''); M.chip.className = 'chip';
+    M.tc = txt(hud, 'right:12px;top:12px', '00:00:00:00'); M.tc.className = 'tc sm';
+    M.chip = txt(hud, 'left:12px;top:30px', ''); M.chip.className = 'chip sm';
     M.ring = mk(hud, 'ring', 'right:14px;top:28px;width:30px;height:30px;transform-origin:50% 50%');
     M.segs = [];
     for (k = 0; k < 12; k++) M.segs.push(mk(M.ring, 'seg', 'transform:rotate(' + (k * 30) + 'deg)'));
-    M.dig = txt(M.ring, 'left:0;right:0;top:9px;text-align:center;font-size:13px;font-weight:700', '3');
-    M.fc = txt(hud, 'left:12px;bottom:12px;color:' + MUTE, ''); M.fc.className = 'fc';
-    M.btag = txt(hud, 'right:12px;bottom:12px;color:' + MUTE, ''); M.btag.className = 'btag';
+    M.dig = txt(M.ring, 'left:0;right:0;top:9px;text-align:center;font-size:13px;font-weight:700;--b:13px', '3', 'sm');
+    M.fc = txt(hud, 'left:12px;bottom:12px;color:' + MUTE, ''); M.fc.className = 'fc dec';
+    M.btag = txt(hud, 'right:12px;bottom:12px;color:' + MUTE, ''); M.btag.className = 'btag dec';
     if (still) [M.rec, M.shut, M.ring, M.fc, M.btag].forEach(function (e) { e.style.display = 'none'; });
     M.f = -1;
     return M;
@@ -479,8 +479,10 @@
       T(M.d3, 'translateX(' + px(270 * (1 - w)) + ')');
       var ww = u <= .68 ? eInOutQuart(seg(u, .53, .68)) : 1 - .5 * eOutCubic(seg(u, .68, .76));
       T(M.wipe, 'translateX(' + px((ww - 1) * 270) + ')'); T(M.after, 'translateX(' + px((1 - ww) * 270) + ')');
-      T(M.div, 'translateX(' + px(ww * 270) + ')');
-      O(M.afterL, seg(ww, .4, .6));
+      T(M.div, 'translateX(' + px(ww * 270) + ')'); O(M.div, 1 - seg(u, .76, .80));
+      C(M.d3, 'zclip', u >= .8);
+      var lf2 = 1 - seg(u, .76, .80); // labels + divider leave before the close-up zoom
+      O(M.afterL, seg(ww, .4, .6) * lf2); O(M.befL, lf2);
       var zp = eInOutCubic(seg(u, .83, .92)), ps = 1 + 1.4 * zp + .1 * seg(u, .92, 1);
       T(M.dz, 'scale(' + ps.toFixed(4) + ')');
       var fb = Math.round(192 + .8 * 192), stp = f >= fb ? 1.3 - .3 * seg(f, fb, fb + 4) : 1;
@@ -549,6 +551,7 @@
   var tcEl = $('#an-tc'), mtc = $('#an-mtc'), titleEl = $('#an-title'), bodyEl = $('#an-body'), statEl = $('#an-stat'), idxEl = $('#an-idx');
   var waveMask = $('#wave-mask'), waveLit = $('#wave-lit'), razor = $('#tl-razor'), rzl = $('#rz-l'), shutEl = $('#pm-shuttle');
   var chapters = $$('#an-chapters button'), clips = $$('#tl-v1 .clip'), tlRegion = $('#tl'), playBtn = $('#pm-play'), verb = $('#an-verb');
+  var MTR = [$('#mtr-l'), $('#mtr-r'), $('#mtr-pk')];
   var well = $('#pm-well'), rtHost = $('#rt'), spark = $('#an-spark');
   titleEl.__splitable = bodyEl.__splitable = true;
 
@@ -576,14 +579,15 @@
   });
 
   // V1 sub-clips + thumbnails, keyframe diamonds, transition markers
-  var v1 = $('#tl-v1');
+  var v1 = $('#tl-v1'), SUBS = [];
   clips.forEach(function (c, i2) {
-    var B = AD.beats[i2]; c.classList.add('has-subs');
+    var B = AD.beats[i2];
     B.cuts.forEach(function (cs, q) {
       var e = q < B.cuts.length - 1 ? B.cuts[q + 1] : B.e;
       var sp = mk(c, 'sub', 'left:' + ((cs - B.s) / (B.e - B.s) * 100) + '%;width:' + ((e - cs) / (B.e - B.s) * 100) + '%', null, 'span');
       sp.setAttribute('aria-hidden', 'true');
       glyph(mk(sp, 'th', null, null, 'span'), B.th[q]);
+      SUBS.push({ el: sp, d: e - cs });
     });
   });
   var KF = [];
@@ -646,6 +650,8 @@
     else { W = $('#pm').clientWidth; iw = W - 14; ih = iw * 16 / 9; }
     frame.style.width = px(iw + 14); frame.style.height = px(ih + 14);
     frame.style.setProperty('--k', (iw / 270).toFixed(4));
+    C(frame, 'pm-small', iw / 270 < .8);
+    SUBS.forEach(function (sb) { C(sb.el, 'no-th', sb.d / 30 * trackW < 60); });
     [RT, SP].forEach(function (g) { if (g) { g.W = g.plot.clientWidth || 300; g.H = g.plot.clientHeight || 150; } });
     cur.f = -1; MON.f = -1; cur.force = true;
   }
@@ -665,7 +671,7 @@
     var m = JM.isReduced() ? 'static' : (JM.mqDesk.matches && win.innerHeight >= 600 ? 'scrub' : 'strip');
     if (m === mode) return; mode = m;
     sec.classList.toggle('is-scrub', m === 'scrub'); sec.classList.toggle('is-strip', m === 'strip');
-    if (verb) verb.textContent = m === 'strip' ? 'Swipe to scrub.' : 'Scroll to scrub.';
+    if (verb) verb.textContent = m === 'strip' ? 'Swipe to scrub.' : m === 'static' ? 'Frame by frame.' : 'Scroll to scrub.';
     if (playBtn) playBtn.hidden = m !== 'strip';
     stopPlay();
     T(ph, 'none'); T(waveMask, 'none'); T(waveLit, 'none');
@@ -719,7 +725,7 @@
     cur.waveIdx = next.map(function (n) { return n[0]; });
     var mL = amp(t) * Math.min(1, ar), mR = amp(t + 1 / 24) * Math.min(1, ar);
     cur.pk = Math.max(cur.pk - .6 * (dt || 0), mL);
-    T($('#mtr-l'), 'scaleY(' + mL.toFixed(3) + ')'); T($('#mtr-r'), 'scaleY(' + mR.toFixed(3) + ')'); T($('#mtr-pk'), 'translateY(' + px(-cur.pk * 28) + ')');
+    T(MTR[0], 'scaleY(' + mL.toFixed(3) + ')'); T(MTR[1], 'scaleY(' + mR.toFixed(3) + ')'); T(MTR[2], 'translateY(' + px(-cur.pk * 28) + ')');
     if (RT && mode === 'scrub') graphAt(RT, t, false);
     if (SP && mode === 'strip') graphAt(SP, t, false);
     chapters.forEach(function (c, q) { var B = AD.beats[q]; T(c.__fill || (c.__fill = c.querySelector('.ch-p i')), 'scaleX(' + clamp((t - B.s) / (B.e - B.s), 0, 1).toFixed(3) + ')'); });
@@ -731,14 +737,14 @@
         if (c.c > lo && c.c <= hi && now - c.last > 200) {
           c.last = now; c.alt = 1 - c.alt;
           c.el.classList.remove('is-flash', 'is-flash2'); c.el.classList.add(c.alt ? 'is-flash' : 'is-flash2');
-          if (RT) RT.ticks.forEach(function (tk) { if (tk.c === c.c) { tk.el.classList.remove('is-flash'); void tk.el.offsetWidth; tk.el.classList.add('is-flash'); } });
+          if (RT) RT.ticks.forEach(function (tk) { if (tk.c === c.c) { tk.el.classList.remove('is-flash', 'is-flash2'); tk.el.classList.add(c.alt ? 'is-flash' : 'is-flash2'); } });
         }
       });
       if (mode === 'scrub' && t > prevT && cur.rS <= 6) AD.beats.forEach(function (B) {
         if (B.s > 0 && B.s > prevT && B.s <= t) {
           T(razor, 'translate3d(' + px(clamp(B.s / 30 * trackW, 28, trackW - 28)) + ',0,0)');
           X(rzl, 'CUT ' + tc(B.s * 24));
-          razor.classList.remove('is-run'); void razor.offsetWidth; razor.classList.add('is-run');
+          cur.rz = !cur.rz; razor.classList.remove('is-run', 'is-run2'); razor.classList.add(cur.rz ? 'is-run' : 'is-run2');
           if (rzTool) { rzTool.classList.add('is-on'); clearTimeout(cur.rzT); cur.rzT = setTimeout(function () { rzTool.classList.remove('is-on'); }, 420); }
         }
       });
