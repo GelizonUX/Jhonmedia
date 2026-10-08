@@ -52,9 +52,9 @@
   function measureAll() { S.vh = win.innerHeight; S.vw = root.clientWidth; measures.forEach(function (f) { safe('measure', f); }); }
 
   /* ---------- Live timecodes (4.11) ---------- */
-  var t0 = performance.now(), heroStart = 0;
+  var heroStart = 0;
   function initTimecodes() {
-    var plEl = $('[data-tc="preloader"]'), heroEl = $('[data-tc="hero"]');
+    var heroEl = $('[data-tc="hero"]');
     var navEl = $('[data-clock="nav"]'), ftEl = $('[data-clock="footer"]');
     var fmt;
     try { fmt = new Intl.DateTimeFormat('en-GB', { timeZone: CONFIG.timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }); }
@@ -69,7 +69,6 @@
       if (navEl && navTxt !== lastNav) { navEl.textContent = navTxt; lastNav = navTxt; }
       var ftTxt = hms.slice(0, 5);
       if (ftEl && ftTxt !== lastFt) { ftEl.textContent = ftTxt; lastFt = ftTxt; }
-      if (plEl && plEl.offsetParent !== null) plEl.textContent = tc((now - t0) * 24 / 1000);
       if (heroEl && heroStart) heroEl.textContent = REDUCED ? tc(Math.floor((now - heroStart) / 1000) * 24) : tc((now - heroStart) * 24 / 1000);
     });
   }
@@ -411,51 +410,98 @@
     var hero = $('.hero'); if (hero) hero.classList.add('is-in');
   }
   function clearBusy() { var m = $('#main'); if (m) m.setAttribute('aria-busy', 'false'); }
+  // Export panel (docs/PRELOADER-OPTIONS.md §7). Beats trimmed so the slow-load cap is gone by ~3.1s.
+  var PL = {
+    names: ['JHON_MEDIA_PORTFOLIO.mp4', 'JHON_MEDIA_PORTFOLIO_v2.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL.mp4',
+            'JHON_MEDIA_PORTFOLIO_FINAL_v2.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL_FINAL.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL_v7.mp4'],
+    nameStep: 180,                     // filename hard cuts; v7 lands at 900ms
+    logAt: [0, 12, 28, 44, 60, 74, 88, 100],
+    frames: 720, fps: 30,
+    easeTo: 90, easeDur: 1300,         // 0 → 90 cubic-out
+    minT: 1500, maxT: 1900,            // finish window
+    skipAfter: 800, runDur: 180,       // run to 100, quad-out
+    hold: 200,                         // hold on EXPORT COMPLETE
+    heroAt: 480, doneAt: 820,          // after exit starts (exit is 800ms; hero at 60%)
+    remFrom: 8, watchdog: 4500
+  };
+  function f30(ms) { // MM:SS:FF @ 30fps
+    var fr = Math.max(0, Math.floor(ms * PL.fps / 1000)), s = Math.floor(fr / PL.fps);
+    return pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60) + ':' + pad(fr % PL.fps);
+  }
   function initPreloader() {
-    var pl = $('#preloader'), count = $('#pl-count'), bar = $('#pl-bar');
+    var pl = $('#preloader');
     var seen = false;
     try { seen = sessionStorage.getItem('jm-preloader') === '1'; } catch (e) { /* storage blocked */ }
     if (!pl || seen) { root.classList.add('pl-skip'); clearBusy(); finishLoad(); return; }
+    var heroFired = false, wd;
+    function hero() { if (!heroFired) { heroFired = true; finishLoad(); } }
+    function done() { pl.classList.add('is-done'); clearBusy(); clearTimeout(wd); }
+    wd = setTimeout(function () { hero(); done(); }, PL.watchdog); // armed before anything can throw
     try { sessionStorage.setItem('jm-preloader', '1'); } catch (e) { /* ignore */ }
-    var done = function () { pl.classList.add('is-done'); clearBusy(); };
+
+    var count = $('#pl-count'), bar = $('#pl-bar'), edge = $('#pl-edge'), file = $('#pl-file'), status = $('#pl-status');
+    var frameEl = $('#pl-frame'), elEl = $('#pl-el'), remEl = $('#pl-rem'), log = $('#pl-log'), lis = $$('li', log);
+    var rows = matchMedia('(min-width: 768px)').matches ? 3 : 1;
+    function W(el, v) { if (el.__v !== v) { el.__v = v; el.textContent = v; } }
+    function setLog(cur) {
+      lis.forEach(function (li, j) { li.classList.toggle('is-past', j < cur); li.classList.toggle('is-cur', j === cur); });
+      log.style.setProperty('--shift', Math.max(0, cur - (rows - 1)));
+    }
+    function setBar(p) { var tr = 'scaleX(' + (p / 100).toFixed(4) + ')'; bar.style.transform = tr; edge.style.transform = tr; }
+    function complete() {
+      W(count, '100'); count.classList.add('is-cut'); W(frameEl, '720'); W(remEl, '00:00:00');
+      W(status, 'EXPORT COMPLETE'); W(file, PL.names[5]); setBar(100);
+      pl.classList.add('is-complete'); setLog(7);
+    }
+
     if (REDUCED) {
-      count.textContent = '100'; count.classList.add('is-cut'); bar.style.transform = 'scaleX(1)';
-      setTimeout(function () { pl.classList.add('is-fade'); finishLoad(); setTimeout(done, 200); }, 300);
+      complete(); W(elEl, '00:00:00');
+      setTimeout(function () { pl.classList.add('is-fade'); hero(); setTimeout(done, 200); }, 300);
       return;
     }
-    var ready = false, skip = false;
-    var waits = [];
+
+    var ready = false, skip = false, waits = [];
     if (doc.fonts && doc.fonts.ready) waits.push(doc.fonts.ready);
     (work.firstImgs || []).forEach(function (img) {
       waits.push(new Promise(function (res) { if (img.__done || img.complete) return res(); img.addEventListener('load', res); img.addEventListener('error', res); }));
     });
     Promise.all(waits).then(function () { ready = true; }, function () { ready = true; });
-    var start = performance.now(), fin = null, finFrom = 0, val = 0, shown = '';
-    var skipper = function () { if (performance.now() - start >= 1200) skip = true; };
-    on(win, 'wheel', skipper, { passive: true }); on(win, 'touchmove', skipper, { passive: true }); on(win, 'keydown', skipper);
+    var start = performance.now(), fin = null, finFrom = 0, nameI = 0, cur = 0, remShown = null;
+    var EV = ['wheel', 'touchmove', 'keydown', 'pointerdown'];
+    var skipper = function () { if (performance.now() - start >= PL.skipAfter) skip = true; };
+    EV.forEach(function (ev) { on(win, ev, skipper, { passive: true }); });
+
     (function step(now) {
-      var t = now - start;
-      if (fin === null) {
-        var k = Math.min(t / 1600, 1);
-        val = 90 * (1 - Math.pow(1 - k, 3));
-        if (t >= 2800 || (t >= 1200 && skip) || (ready && t >= 1500)) { fin = now; finFrom = val; }
-      } else {
-        var kk = Math.min((now - fin) / 150, 1);
-        val = finFrom + (100 - finFrom) * kk;
-      }
-      var txt = pad(Math.round(val), 3);
-      if (txt !== shown) { count.textContent = txt; shown = txt; bar.style.transform = 'scaleX(' + (val / 100) + ')'; }
-      if (val >= 100) {
-        count.classList.add('is-cut'); // weight cut
-        setTimeout(function () {
-          pl.classList.add('is-wipe');
-          setTimeout(finishLoad, 720); // overlap at 60% of the wipe
-          setTimeout(done, 1250);
-        }, 150);
-        win.removeEventListener('wheel', skipper); win.removeEventListener('touchmove', skipper); win.removeEventListener('keydown', skipper);
-        return;
-      }
-      requestAnimationFrame(step);
+      try {
+        var t = now - start, p;
+        var ni = Math.min(5, Math.floor(t / PL.nameStep));
+        if (ni !== nameI) { nameI = ni; W(file, PL.names[ni]); }
+        if (fin === null) {
+          p = PL.easeTo * (1 - Math.pow(1 - Math.min(t / PL.easeDur, 1), 3));
+          if ((ready && t >= PL.minT) || t >= PL.maxT || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
+        } else {
+          var k = Math.min((now - fin) / PL.runDur, 1);
+          p = finFrom + (100 - finFrom) * (1 - (1 - k) * (1 - k));
+        }
+        W(count, pad(Math.round(p), 3)); setBar(p);
+        W(frameEl, pad(Math.round(p / 100 * PL.frames), 3));
+        W(elEl, f30(t));
+        if (p < PL.remFrom) W(remEl, '--:--:--');
+        else { var est = t * (100 - p) / p; remShown = remShown === null ? est : remShown + (est - remShown) * .15; W(remEl, f30(remShown)); }
+        var c = 0; for (var i = 0; i < PL.logAt.length; i++) if (p >= PL.logAt[i]) c = i;
+        if (c !== cur) { cur = c; setLog(c); }
+        if (p >= 100) {
+          EV.forEach(function (ev) { win.removeEventListener(ev, skipper); });
+          complete();
+          setTimeout(function () {
+            pl.classList.add('is-exit');
+            setTimeout(hero, PL.heroAt);
+            setTimeout(done, PL.doneAt);
+          }, PL.hold);
+          return;
+        }
+        requestAnimationFrame(step);
+      } catch (e) { hero(); done(); }
     })(start);
   }
 

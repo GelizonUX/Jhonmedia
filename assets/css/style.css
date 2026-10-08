@@ -155,27 +155,84 @@ main, .footer { position: relative; z-index: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .grain { animation: none !important; } }
 
-/* ---------- Preloader ---------- */
+/* ---------- Preloader: export panel (docs/PRELOADER-OPTIONS.md §7) ----------
+   Exit is transform-only. Timings trimmed so the cap case is gone by ~3.1s. */
 .preloader { display: none; }
 html.js .preloader {
-  display: block; position: fixed; inset: 0; z-index: 7000; background: var(--c-black);
-  font-size: var(--t-label); letter-spacing: .12em; text-transform: uppercase; font-variant-numeric: tabular-nums;
-  clip-path: inset(0 0 0 0);
-  transition: clip-path var(--d-5) var(--ease-in-out), opacity 200ms linear;
+  display: block; position: fixed; inset: 0; z-index: 7000;
+  background: var(--c-black); color: var(--c-white); overflow: hidden;
+  contain: layout paint style;
+  transform: translate3d(0, 0, 0);
+  /* Pure-CSS failsafe: if JS dies mid-run, hide after 6s no matter what. */
+  animation: pl-failsafe 1ms linear 6000ms forwards;
 }
-html.js .preloader.is-wipe { clip-path: inset(0 0 100% 0); }
-html.js .preloader.is-fade { opacity: 0; }
+@keyframes pl-failsafe { to { opacity: 0; visibility: hidden; } }
+html.js .preloader.is-exit {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 800ms var(--ease-in-out);
+  will-change: transform;
+}
+html.js .preloader.is-exit .pl-inner {
+  transform: translate3d(0, 25vh, 0);
+  transition: transform 800ms var(--ease-in-out);
+}
+html.js .preloader.is-fade { opacity: 0; transition: opacity 200ms linear; }
 html.js .preloader.is-done, html.js.pl-skip .preloader { display: none; }
-.pl-tl, .pl-tr, .pl-bl, .pl-br { position: absolute; padding: var(--gutter); }
-.pl-tl { top: 0; left: 0; } .pl-tr { top: 0; right: 0; color: var(--c-mute); }
-.pl-bl { bottom: 0; left: 0; } .pl-br { bottom: 0; right: 0; color: var(--c-mute); }
-.pl-count {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  font-size: var(--t-mega); line-height: .82; letter-spacing: -0.035em; font-weight: var(--w-thin);
-  font-variant-numeric: tabular-nums; text-transform: none;
+
+.pl-inner { position: absolute; inset: 0; padding: var(--gutter); }
+.pl-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-4); }
+.pl-status { color: var(--c-white); white-space: nowrap; }
+.preloader.is-complete .rec-dot { animation: none; opacity: 1; }
+
+.pl-main { position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--gutter); }
+.pl-file {
+  font-size: clamp(13px, 1.5vw, 22px); font-weight: var(--w-reg); letter-spacing: 0.02em;
+  white-space: nowrap; overflow: hidden; text-overflow: clip;
+}
+.pl-spec { margin-top: 8px; font-size: var(--t-label); letter-spacing: .12em; text-transform: uppercase; color: var(--c-mute); }
+.pl-pct {
+  display: flex; align-items: flex-start; margin-top: clamp(16px, 3vw, 40px);
+  font-size: var(--t-mega); line-height: .82; font-weight: var(--w-thin);
+  letter-spacing: -0.035em; font-variant-numeric: tabular-nums;
 }
 .pl-count.is-cut { font-weight: var(--w-bold); letter-spacing: -0.055em; }
-.pl-bar { position: absolute; left: 0; bottom: 0; height: 1px; width: 100%; background: #fff; transform-origin: left; transform: scaleX(0); }
+.pl-sign { font-size: .32em; line-height: 1; margin-left: .1em; padding-top: .08em; letter-spacing: 0; }
+.pl-track { position: relative; height: 1px; margin-top: clamp(16px, 2vw, 32px); background: var(--c-ink-3); overflow: hidden; }
+.pl-bar, .pl-edge { position: absolute; background: var(--c-white); transform-origin: 0 50%; transform: scaleX(0); }
+.pl-bar { inset: 0; }
+/* The panel's bottom edge mirrors the bar; when the panel lifts it rides up as the wipe's leading edge. */
+.pl-edge { left: 0; right: 0; bottom: 0; height: 1px; }
+
+.pl-stats {
+  display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 8px;
+  margin-top: 12px; font-size: var(--t-label); letter-spacing: .12em; text-transform: uppercase;
+  font-variant-numeric: tabular-nums; color: var(--c-mute); white-space: nowrap;
+}
+.pl-el { display: none; }
+.pl-v { display: inline-block; color: var(--c-white); text-align: left; }
+.pl-w3 { min-width: 3ch; } .pl-w8 { min-width: 8ch; }
+
+.pl-log { --lh: 1.6em; --rows: 1; margin-top: 16px; height: calc(var(--lh) * var(--rows)); overflow: hidden;
+  font-size: var(--t-label); letter-spacing: .04em; line-height: var(--lh); }
+.pl-log-list { list-style: none; margin: 0; padding: 0;
+  transform: translate3d(0, calc(var(--shift, 0) * var(--lh) * -1), 0);
+  transition: transform 240ms var(--ease-out); }
+.pl-log-list li { height: var(--lh); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--c-mute);
+  opacity: 0; transition: opacity 120ms linear; }
+.pl-log-list li::before { content: "> "; }
+.pl-log-list li.is-past { opacity: 1; }
+.pl-log-list li.is-cur { opacity: 1; color: var(--c-white); }
+
+@media (max-width: 374px) { .pl-stats { letter-spacing: .06em; } }
+@media (min-width: 768px) {
+  .pl-stats { grid-template-columns: auto auto auto; }
+  .pl-el { display: inline; }
+  .pl-log { --rows: 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader .rec-dot { animation: none !important; }
+  .pl-log-list, .pl-log-list li { transition: none !important; }
+}
 
 /* ---------- Custom cursor ---------- */
 .cursor { display: none; }
