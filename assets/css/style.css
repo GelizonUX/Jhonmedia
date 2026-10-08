@@ -823,3 +823,7 @@ html.menu-open .nav { visibility: hidden; }
 
 /* Keep the bottom viewfinder brackets clear of the intro and CTAs */
 @media (min-width: 768px) { .hero-row { padding-bottom: var(--s-7); } }
+
+/* Plain-text email (no links yet): match the link rows it replaced */
+.menu-foot span { min-height: 44px; display: flex; align-items: center; }
+.ft-cols > div > span { min-height: 32px; display: inline-flex; align-items: center; }

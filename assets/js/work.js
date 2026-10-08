@@ -40,7 +40,7 @@ window.WORK_CONFIG = {
   // "newtab"  : clicking a card opens TikTok in a new tab (recommended)
   // "lightbox": clicking plays the TikTok embed on the page
   mode: "newtab",
-  profile: "https://www.tiktok.com/@jhonmedia" // placeholder — replace
+  profile: "" // your TikTok profile URL (optional)
 };
 
 window.WORK = [
@@ -51,7 +51,7 @@ window.WORK = [
     format: "0:24 · 9:16",
     metric: "2.4x ROAS",              // placeholder — replace
     thumbnail: "assets/thumbs/01.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000001" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "The journal in 15 seconds",
@@ -60,7 +60,7 @@ window.WORK = [
     format: "0:15 · 9:16",
     metric: "41% hook rate",          // placeholder — replace
     thumbnail: "assets/thumbs/02.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000002" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "Founder tells the story",
@@ -69,7 +69,7 @@ window.WORK = [
     format: "0:38 · 9:16",
     metric: "-32% CPA",               // placeholder — replace
     thumbnail: "assets/thumbs/03.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000003" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "Why my dog stopped scratching",
@@ -78,7 +78,7 @@ window.WORK = [
     format: "0:29 · 9:16",
     metric: "3.1x ROAS",              // placeholder — replace
     thumbnail: "assets/thumbs/04.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000004" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "Five reasons, zero footage",
@@ -87,7 +87,7 @@ window.WORK = [
     format: "0:12 · 9:16",
     metric: "$0.71 CPC",              // placeholder — replace
     thumbnail: "assets/thumbs/05.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000005" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "Unboxing, then the twist",
@@ -96,7 +96,7 @@ window.WORK = [
     format: "0:21 · 9:16",
     metric: "38% hold rate",          // placeholder — replace
     thumbnail: "assets/thumbs/06.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000006" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "Three creators, one hook",
@@ -105,7 +105,7 @@ window.WORK = [
     format: "0:26 · 9:16",
     metric: "18 hooks tested",        // placeholder — replace
     thumbnail: "assets/thumbs/07.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000007" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "The vet breakdown",
@@ -114,7 +114,7 @@ window.WORK = [
     format: "0:44 · 9:16",
     metric: "2.0x ROAS",              // placeholder — replace
     thumbnail: "assets/thumbs/08.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000008" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   },
   {
     title: "Kinetic type launch spot",
@@ -123,6 +123,6 @@ window.WORK = [
     format: "0:09 · 9:16",
     metric: "1.2M views",             // placeholder — replace
     thumbnail: "assets/thumbs/09.jpg",
-    tiktok: "https://www.tiktok.com/@jhonmedia/video/0000000000000000009" // placeholder — replace
+    tiktok: "" // add the TikTok video URL here
   }
 ];
