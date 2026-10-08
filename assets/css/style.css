@@ -756,3 +756,10 @@ html.menu-open .nav { visibility: hidden; }
 @media (min-width: 1024px) { .process .pr-panel .h1 { min-height: 2.2em; min-height: 2lh; } }
 /* Scroll cue collides with the bottom-left viewfinder bracket; the page already leads into Work */
 @media (min-width: 768px) { .scroll-cue { display: none; } }
+
+/* Hero: size to content at every width; no auto-margin band above the headline */
+@media (min-width: 1024px) {
+  .hero { min-height: 0; }
+  .hero-title { margin-top: var(--s-8); padding-top: 0; }
+  .hero-row { margin-top: var(--s-7); }
+}
