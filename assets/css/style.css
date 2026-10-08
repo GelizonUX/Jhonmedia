@@ -547,21 +547,11 @@ html.js .stats:not(.is-in) .stat::before { transform: scaleX(0); }
 
 /* ---------- Process ---------- */
 .process .d1 { margin-bottom: var(--s-8); }
-.pr-progress { display: none; }
 .pr-row { display: flex; flex-direction: column; gap: var(--s-8); }
 .pr-panel { position: relative; border-left: var(--line); padding-left: var(--s-5); display: flex; flex-direction: column; gap: var(--s-4); }
 .pr-num { color: var(--c-ink-3); font-weight: var(--w-thin); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; font-size: clamp(4rem, 22vw, 10rem); }
 .pr-panel .h1 { margin-top: -.9em; position: relative; }
 .pr-panel p { max-width: 40ch; }
-.process.is-pinned { padding-bottom: 0; }
-.process.is-pinned .pr-scroll { position: relative; margin: 0 calc(var(--gutter) * -1); }
-.process.is-pinned .pr-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: var(--s-8); padding: var(--nav-h) 0 var(--s-6); }
-.process.is-pinned .pr-progress { display: flex; align-items: center; gap: var(--s-5); padding: 0 var(--gutter); color: var(--c-mute); }
-.pr-bar { position: relative; flex: 1; height: 1px; background: var(--c-ink-3); }
-.pr-bar i { position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0); }
-.process.is-pinned .pr-row { flex-direction: row; gap: 0; width: max-content; padding: 0 var(--gutter); will-change: transform; }
-.process.is-pinned .pr-panel { width: 38vw; flex: 0 0 38vw; padding-right: var(--s-8); }
-.process.is-pinned .pr-num { font-size: var(--t-mega); }
 
 /* ---------- Brands ---------- */
 .brands { padding: var(--s-9) 0; position: relative; }
@@ -696,7 +686,6 @@ html.menu-open .nav { visibility: hidden; }
 .services .d1, .process .d1 { margin-bottom: var(--rh-content); }
 .contact-mail { margin-top: var(--rh-content); }
 .stats-note, .tq-bar { margin-top: var(--rh-block); }
-.process.is-pinned .pr-stage { justify-content: flex-start; padding-top: calc(var(--nav-h) + var(--s-7)); }
 .brands { padding: calc(var(--section-y) / 2) 0; }
 .footer { padding-bottom: var(--s-7); }
 .results-intro { max-width: 40ch; }
@@ -715,9 +704,6 @@ html.menu-open .nav { visibility: hidden; }
   .faq-head .d1 { font-size: clamp(3rem, 7.2vw, 9rem); }
   .faq-list { grid-column: 7 / 13; }
 }
-.process.is-pinned .d1 { margin-bottom: 0; }
-.process.is-pinned .pr-stage { padding-top: calc(var(--nav-h) + var(--s-6)); }
-.process.is-pinned .pr-row { margin-block: auto; } /* panels centred in the space under the progress bar */
 
 /* ---------- Hero: breathing room ---------- */
 .hero { --hero-chrome: 340px; }
@@ -734,3 +720,34 @@ html.menu-open .nav { visibility: hidden; }
   .hero-intro { grid-column: 1 / 7; }
   .hero-ctas { grid-column: 7 / 13; justify-content: flex-end; }
 }
+
+/* ---------- Scroll efficiency ---------- */
+:root { --section-y: clamp(64px, 9vw, 160px); }
+@media (max-width: 767px) { :root { --rh-label: var(--s-6); --rh-content: var(--s-7); --rh-block: var(--s-6); } }
+@media (max-width: 1023px) {
+  .hero { min-height: 0; }
+  .hero-title { margin-top: var(--s-7); padding-top: 0; }
+  .hero-row { margin-top: var(--s-6); }
+}
+@media (max-width: 767px) {
+  .scroll-cue { display: none; }
+  .grid { padding-bottom: 0; }
+  .cell[data-m2="1"] { transform: none; }
+  .filters-wrap { margin-bottom: var(--s-6); }
+  .work-more { margin-top: var(--s-7); }
+  .stats { gap: var(--s-6) var(--gap); }
+  .pr-row { gap: var(--s-7); }
+  .pr-num { font-size: clamp(3rem, 16vw, 5rem); }
+  .svc-desc { grid-column: 2 / -1; }
+  .ft-cols { grid-template-columns: 1fr 1fr; gap: var(--s-6) var(--gap); }
+  .ft-cols a, .work-more a, .nav-mark { min-height: 44px; display: inline-flex; align-items: center; }
+  .ft-legal { margin-top: var(--s-7); }
+  .footer { padding-top: var(--s-8); }
+}
+/* Process: static row on desktop (no pin). 3 columns at 1024–1279 so step text fits, 5 from 1280. */
+@media (min-width: 1024px) {
+  .process .pr-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-8) var(--gap); }
+  .process .pr-num { font-size: clamp(4rem, 8vw, 9rem); }
+}
+@media (min-width: 1280px) { .process .pr-row { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (min-width: 1280px) { .process .pr-panel .h1 { font-size: clamp(1.5rem, 2vw, 2.25rem); } .process .pr-panel { padding-left: var(--s-4); } }

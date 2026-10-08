@@ -664,39 +664,6 @@
   /* ---------- Edit timeline: lives in anatomy.js (docs/TIMELINE-V2.md) ---------- */
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
-  /* ---------- Process horizontal (3.7, 4.7) ---------- */
-  function initProcess() {
-    var sec = $('#process'), wrap = $('#pr-scroll'), row = $('#pr-row'), bar = $('#pr-bar'), step = $('#pr-step');
-    if (!sec || !wrap) return;
-    var pinned = false, top = 0, height = 1, dist = 0, lastP = -1, lastStep = '';
-    function setMode() {
-      pinned = !REDUCED && mqDesk.matches;
-      sec.classList.toggle('is-pinned', pinned);
-      if (!pinned) { wrap.style.height = ''; row.style.transform = ''; }
-      measure();
-    }
-    function measure() {
-      if (!pinned) return;
-      var rowW = row.scrollWidth;
-      dist = Math.max(0, rowW - S.vw);
-      wrap.style.height = (dist + S.vh) + 'px';
-      top = docTop(wrap); height = wrap.offsetHeight; lastP = -1;
-    }
-    ticks.push(function () {
-      if (!pinned) return;
-      if (S.smooth < top - S.vh || S.smooth > top + height) return;
-      var p = clamp((S.smooth - top) / Math.max(1, height - S.vh), 0, 1);
-      if (Math.abs(p - lastP) < 0.00005) return; lastP = p;
-      row.style.transform = 'translate3d(' + (-p * dist).toFixed(1) + 'px,0,0)';
-      bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
-      var s = 'STEP ' + pad(Math.min(5, Math.floor(p * 5) + 1)) + ' / 05';
-      if (s !== lastStep) { step.textContent = s; lastStep = s; }
-    });
-    measures.push(measure);
-    listen(mqDesk, function () { setMode(); measureAll(); }); listen(mqReduced, function () { setMode(); measureAll(); });
-    setMode();
-  }
-
   /* ---------- Testimonials (3.9) ---------- */
   function initTestimonials() {
     var wrap = $('#tq-wrap'); if (!wrap) return;
@@ -810,7 +777,6 @@
   safe('parallax', initParallax);
   safe('counters', initCounters);
   safe('labelTc', initLabelTc);
-  safe('process', initProcess);
   safe('testimonials', initTestimonials);
   safe('faq', initFaq);
   safe('contact', initContact);
