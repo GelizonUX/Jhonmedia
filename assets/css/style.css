@@ -820,3 +820,6 @@ html.menu-open .nav { visibility: hidden; }
   .hero-title { margin-top: var(--s-8); padding-top: 0; }
   .hero-row { margin-top: var(--s-7); }
 }
+
+/* Keep the bottom viewfinder brackets clear of the intro and CTAs */
+@media (min-width: 768px) { .hero-row { padding-bottom: var(--s-7); } }

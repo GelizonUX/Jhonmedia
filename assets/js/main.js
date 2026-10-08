@@ -477,8 +477,11 @@
         var ni = Math.min(5, Math.floor(t / PL.nameStep));
         if (ni !== nameI) { nameI = ni; W(file, PL.names[ni]); }
         if (fin === null) {
-          p = PL.easeTo * (1 - Math.pow(1 - Math.min(t / PL.easeDur, 1), 3));
-          if ((ready && t >= PL.minT) || t >= PL.maxT || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
+          // Progress and the finish window run on the navigation clock, so a late-booting main.js
+          // doesn't replay the whole run on top of the wait; the filename gag stays on the local clock.
+          var tn = Math.max(now, t);
+          p = PL.easeTo * (1 - Math.pow(1 - Math.min(tn / PL.easeDur, 1), 3));
+          if ((((ready && tn >= PL.minT) || tn >= PL.maxT) && t >= 600) || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
         } else {
           var k = Math.min((now - fin) / PL.runDur, 1);
           p = finFrom + (100 - finFrom) * (1 - (1 - k) * (1 - k));

@@ -19,7 +19,10 @@
      the safety timer removes the flag so nothing stays hidden. */
   document.documentElement.className += ' js';
   window.__jmSafety = setTimeout(function () {
-    if (!window.__jmReady) document.documentElement.classList.remove('js');
+    if (!window.__jmReady) {
+      document.documentElement.classList.remove('js');
+      var m = document.getElementById('main'); if (m) m.setAttribute('aria-busy', 'false');
+    }
   }, 3500);
 </script>
 </head>
