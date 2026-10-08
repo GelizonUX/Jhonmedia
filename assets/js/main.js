@@ -208,9 +208,7 @@
     if (!grid) return;
     var cfg = win.WORK_CONFIG || {};
     var data = Array.isArray(win.WORK) ? win.WORK : [];
-    var profile = cfg.profile || 'https://www.tiktok.com/@jhonmedia';
     var lightbox = cfg.mode === 'lightbox';
-    var more = $('#work-more'); if (more) more.href = profile;
 
     if (!data.length) { empty.hidden = false; if (filters) filters.parentNode.hidden = true; setCount(0, false); return; }
 
@@ -220,10 +218,12 @@
       var vid = videoId(item.tiktok);
       var asButton = lightbox && !unset && vid;
       var cell = doc.createElement('li'); cell.className = 'cell';
-      var card = doc.createElement(asButton ? 'button' : 'a'); card.className = 'card';
+      // Cards without a real video link render as plain tiles, not links
+      var card = doc.createElement(asButton ? 'button' : (unset ? 'div' : 'a')); card.className = 'card';
       var a11y = (item.title || '') + ', ' + (item.brand || '') + ', ' + (item.category || '') + '.';
       if (asButton) { card.type = 'button'; card.setAttribute('aria-label', a11y + ' Plays the video.'); card.style.textAlign = 'left'; card.style.width = '100%'; }
-      else { card.href = unset ? profile : item.tiktok; card.target = '_blank'; card.rel = 'noopener'; card.setAttribute('aria-label', a11y + ' Opens TikTok in a new tab.'); }
+      else if (unset) { card.setAttribute('aria-label', a11y + ' Video coming soon.'); }
+      else { card.href = item.tiktok; card.target = '_blank'; card.rel = 'noopener'; card.setAttribute('aria-label', a11y + ' Opens TikTok in a new tab.'); }
       card.setAttribute('data-cursor', unset ? 'soon' : 'play');
 
       var media = doc.createElement('div'); media.className = 'card-media';
