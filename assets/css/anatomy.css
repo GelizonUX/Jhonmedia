@@ -216,7 +216,7 @@
 .ch-p i { position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; }
 
 /* ---------- Scrub mode (desktop) ---------- */
-.anatomy.is-scrub .an-scroll { position: relative; height: 560vh; }
+.anatomy.is-scrub .an-scroll { position: relative; height: 400vh; }
 .anatomy.is-scrub .an-stage {
   position: sticky; top: 0; height: 100vh; height: 100svh;
   padding: calc(var(--nav-h) + var(--s-4)) var(--gutter) var(--s-6);

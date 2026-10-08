@@ -144,6 +144,8 @@ The timecode ranges are cosmetic and increase down the page so the whole site re
 
 ### 3.0 Preloader
 
+> Superseded by `docs/PRELOADER-OPTIONS.md` §7 (concept A, export panel), shipped with beats trimmed to a ~3.1s cap. The text below is the original v1 spec.
+
 **Layout:** Full viewport, `--c-black`. Center: huge counter `000` → `100` in `--t-mega`, weight 200, tabular nums. Bottom-left: `JHON MEDIA` label. Bottom-right: running timecode `00:00:00:00` at 24fps. Top-left: `● REC` (dot pulses). Top-right: `LOADING FOOTAGE`.
 
 A 1px white progress line runs across the bottom edge, width tied to the counter.
@@ -712,6 +714,8 @@ See 3.7. Pinned with `position: sticky`, translateX driven by `smoothY`. Contain
 See 3.4. Shared `countUp(el, to, duration)` util. Respects decimals (`2.4x`) via `data-decimals`.
 
 ### 4.10 Page-load sequence (total ~3s, interruptible)
+
+> Superseded by `docs/PRELOADER-OPTIONS.md` §7 (export panel). Exit is a transform lift, hero entrance at 60% of it.
 1. 0.0s: preloader counter 0 → 100 (1.2–2.8s depending on load).
 2. +0.15s: weight cut on `100`, preloader wipes up (1.2s).
 3. Overlapping at 60% of the wipe: hero label row in, headline lines stagger up, thin words trail by 120ms.
