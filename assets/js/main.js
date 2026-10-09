@@ -410,21 +410,23 @@
     var hero = $('.hero'); if (hero) hero.classList.add('is-in');
   }
   function clearBusy() { var m = $('#main'); if (m) m.setAttribute('aria-busy', 'false'); }
-  // Export panel v2 (docs/PRELOADER-OPTIONS.md §7 + Program preview). Plays on every load.
+  // Preloader v3: export panel + NLE timeline loader. Plays on every load.
   var PL = {
-    names: ['JHON_MEDIA_PORTFOLIO.mp4', 'JHON_MEDIA_PORTFOLIO_v2.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL.mp4',
-            'JHON_MEDIA_PORTFOLIO_FINAL_v2.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL_FINAL.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL_v7.mp4'],
-    nameStep: 180,                     // filename hard cuts; v7 lands at 900ms
-    logAt: [0, 12, 28, 44, 60, 74, 88, 100],
+    lines: ['Let me edit your video.', 'Cutting the boring parts.', 'Your hook called. It wants a rewrite.', 'Hire me, dawg.'],
+    lineAt: [0, 420, 900, 1500],       // hard cuts; the last line lands before EXPORT COMPLETE (≥ 1800ms)
+    logAt: [0, 16, 34, 52, 70, 88],    // progress % that activates log line i
+    status: 'EXPORT COMPLETE · LET’S CUT YOUR NEXT WINNER',
     frames: 720, fps: 30,
-    easeTo: 90, easeDur: 1300,         // 0 → 90 cubic-out
-    minT: 1500, maxT: 1900,            // finish window
+    easeTo: 90, easeDur: 1600,         // 0 → 90 cubic-out
+    minT: 1800, maxT: 2200,            // finish window (navigation clock)
     skipAfter: 800, runDur: 180,       // run to 100, quad-out
-    hold: 260,                         // hold on EXPORT COMPLETE
-    expand: 680,                       // tile FLIPs to fill the viewport (matches CSS)
-    fade: 260,                         // expanded frame fades to black (CSS .is-fade)
-    out: 160,                          // black panel drops to reveal the hero (CSS .is-out)
-    buckets: 60, prodAt: 22, word1At: 46, word2At: 66, muxLine: 6,
+    hold: 500,                         // playhead snaps to the end, the "cut" flashes, hold
+    fade: 300,                         // panel content fades to black (.is-fade)
+    out: 160,                          // black drops, hero enters (.is-out)
+    // Timeline (fractions of the ruler). Precomputed once; rAF only toggles classes + one transform.
+    v1: [[0, .14], [.14, .30], [.30, .47], [.47, .62], [.62, .80], [.80, 1]],
+    a1: [[0, .30], [.30, .62], [.62, 1]],
+    t1: [[.03, .12], [.16, .25], [.32, .41], [.49, .58], [.64, .74], [.83, .94]],
     remFrom: 8, watchdog: 4500
   };
   function f30(ms) { // MM:SS:FF @ 30fps
@@ -440,56 +442,40 @@
     function done() { pl.classList.add('is-done'); clearBusy(); clearTimeout(wd); }
     wd = setTimeout(function () { hero(); done(); }, PL.watchdog); // armed before anything can throw
 
-    var count = $('#pl-count'), bar = $('#pl-bar'), file = $('#pl-file'), status = $('#pl-status'), mbps = $('#pl-mbps');
-    var frameEl = $('#pl-frame'), elEl = $('#pl-el'), remEl = $('#pl-rem'), log = $('#pl-log'), lis = $$('li', log);
-    var pvBg = $('#pv-bg'), pvVid = $('#pv-vid'), pvTc = $('#pv-tc'), scan = $('#pv-scan'), prod = $('#pv-prod');
-    var w1 = $('#pv-w1'), w2 = $('#pv-w2'), mL = $('#pv-l'), mR = $('#pv-r'), bk = $('#pv-buckets');
+    var count = $('#pl-count'), file = $('#pl-file'), status = $('#pl-status'), mbps = $('#pl-mbps');
+    var frameEl = $('#pl-frame'), elEl = $('#pl-el'), remEl = $('#pl-rem'), log = $('#pl-log'), lis = $$('li', log), ph = $('#plt-ph');
     var rows = matchMedia('(min-width: 768px)').matches ? 3 : 1;
     function W(el, v) { if (el && el.__v !== v) { el.__v = v; el.textContent = v; } }
-    function C(el, c, onn) { var k = '__' + c; if (el && el[k] !== onn) { el[k] = onn; el.classList.toggle(c, onn); } }
     function setLog(cur) {
       lis.forEach(function (li, j) { li.classList.toggle('is-past', j < cur); li.classList.toggle('is-cur', j === cur); });
       log.style.setProperty('--shift', Math.max(0, cur - (rows - 1)));
     }
-    // Render buckets in a scattered (seeded) order
-    var cells = [], order = [], rnd = mulberry32(11), i;
-    if (bk) {
-      for (i = 0; i < PL.buckets; i++) { var c = doc.createElement('i'); c.appendChild(doc.createElement('b')); bk.appendChild(c); cells.push(c); order.push(i); }
-      for (i = order.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), tmp = order[i]; order[i] = order[j]; order[j] = tmp; }
-    }
-    function frameAt(p) { // everything inside the Program tile is a function of progress
-      var n = Math.floor(clamp(p / 95, 0, 1) * PL.buckets);
-      for (var q = 0; q < order.length; q++) { var cl = cells[order[q]]; C(cl, 'is-done', q < n); C(cl, 'is-act', p < 100 && q >= n && q < n + 3); }
-      C(prod, 'is-on', p >= PL.prodAt); C(w1, 'is-on', p >= PL.word1At); C(w2, 'is-on', p >= PL.word2At);
-      W(pvTc, f30(p / 100 * PL.frames / PL.fps * 1000));
-    }
-    function meter(t, amp, dt) {
-      [mL, mR].forEach(function (m, ch) {
-        if (!m) return;
-        var v = amp * (0.22 + 0.78 * (0.6 * hash(Math.floor(t / 55) + ch * 97) + 0.4 * (0.5 + 0.5 * Math.sin(t * 0.013 + ch * 2.1))));
-        m.__lvl = Math.max(v, (m.__lvl || 0) - 2.2 * dt); // VU-style fall-off
-        m.style.transform = 'scaleY(' + Math.max(.04, m.__lvl).toFixed(3) + ')';
+    // Build the timeline once: clips (start fraction, element), razor marks at V1 joins
+    var clips = [], rnd = mulberry32(5);
+    function lay(laneId, list, bars) {
+      var lane = $(laneId); if (!lane) return;
+      list.forEach(function (c) {
+        var e = doc.createElement('i');
+        e.style.left = (c[0] * 100) + '%'; e.style.width = ((c[1] - c[0]) * 100) + '%';
+        if (bars) for (var k = Math.max(4, Math.round((c[1] - c[0]) * 90)); k > 0; k--) { var bb = doc.createElement('b'); bb.style.height = Math.round(18 + rnd() * 78) + '%'; e.appendChild(bb); }
+        lane.appendChild(e); clips.push({ at: c[0] * 100, el: e });
       });
+    }
+    lay('#plt-v1', PL.v1); lay('#plt-a1', PL.a1, true); lay('#plt-t1', PL.t1);
+    var cutsHost = $('#plt-cuts');
+    PL.v1.slice(1).forEach(function (c) { var e = doc.createElement('i'); e.style.left = (c[0] * 100) + '%'; if (cutsHost) cutsHost.appendChild(e); clips.push({ at: c[0] * 100 + 1, el: e }); });
+    function timelineAt(p) {
+      for (var q = 0; q < clips.length; q++) { var cl = clips[q], onn = p >= cl.at; if (cl.el.__on !== onn) { cl.el.__on = onn; cl.el.classList.toggle('is-on', onn); } }
+      if (ph) ph.style.transform = 'translate3d(' + clamp(p, 0, 100).toFixed(2) + '%,0,0)';
     }
     function complete() {
       W(count, '100'); count.classList.add('is-cut'); W(frameEl, '0720'); W(remEl, '00:00:00'); W(mbps, '12.4');
-      W(status, 'EXPORT COMPLETE'); W(file, PL.names[5]); bar.style.transform = 'scaleX(1)';
-      pl.classList.add('is-complete'); setLog(7); frameAt(100); meter(0, 0, 1);
+      W(status, PL.status); W(file, PL.lines[3]); timelineAt(100);
+      pl.classList.add('is-complete'); setLog(lis.length - 1);
     }
-    function exitAndReveal() {
-      // FLIP: one cached read, then transforms only. Background fills the viewport, the 9:16 video "contains".
-      var R = pvBg.getBoundingClientRect(), vw = root.clientWidth, vh = win.innerHeight;
-      var s = Math.min(vw / R.width, vh / R.height), fx = (vw - R.width * s) / 2, fy = (vh - R.height * s) / 2;
-      pl.classList.add('is-exit');
-      requestAnimationFrame(function () {
-        pvBg.style.transform = 'translate3d(' + (-R.left).toFixed(1) + 'px,' + (-R.top).toFixed(1) + 'px,0) scale(' + (vw / R.width).toFixed(4) + ',' + (vh / R.height).toFixed(4) + ')';
-        pvVid.style.transform = 'translate3d(' + (fx - R.left).toFixed(1) + 'px,' + (fy - R.top).toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
-      });
-      // Frame fades to black first (panel stays opaque), then the black drops and the hero starts: never both at once.
-      setTimeout(function () {
-        pl.classList.add('is-fade');
-        setTimeout(function () { hero(); pl.classList.add('is-out'); setTimeout(done, PL.out); }, PL.fade);
-      }, PL.expand);
+    function exit() { // never panel + hero together: fade panel to black, then drop the black and start the hero
+      pl.classList.add('is-fade');
+      setTimeout(function () { hero(); pl.classList.add('is-out'); setTimeout(done, PL.out); }, PL.fade);
     }
 
     if (REDUCED) {
@@ -504,19 +490,19 @@
       waits.push(new Promise(function (res) { if (img.__done || img.complete) return res(); img.addEventListener('load', res); img.addEventListener('error', res); }));
     });
     Promise.all(waits).then(function () { ready = true; }, function () { ready = true; });
-    var start = performance.now(), last = start, fin = null, finFrom = 0, nameI = 0, cur = 0, remShown = null;
+    var start = performance.now(), fin = null, finFrom = 0, lineI = 0, cur = 0, remShown = null;
     var EV = ['wheel', 'touchmove', 'keydown', 'pointerdown'];
     var skipper = function () { if (performance.now() - start >= PL.skipAfter) skip = true; };
     EV.forEach(function (ev) { on(win, ev, skipper, { passive: true }); });
 
     (function step(now) {
       try {
-        var t = now - start, dt = Math.min((now - last) / 1000, .1), p; last = now;
-        var ni = Math.min(5, Math.floor(t / PL.nameStep));
-        if (ni !== nameI) { nameI = ni; W(file, PL.names[ni]); }
+        var t = now - start, p;
+        var li = 0; for (var n = 0; n < PL.lineAt.length; n++) if (t >= PL.lineAt[n]) li = n;
+        if (li !== lineI) { lineI = li; W(file, PL.lines[li]); }
         if (fin === null) {
           // Progress and the finish window run on the navigation clock, so a late-booting main.js
-          // doesn't replay the whole run on top of the wait; the filename gag and log stay on the local clock.
+          // doesn't replay the whole run on top of the wait; the headline lines and log stay on the local clock.
           var tn = Math.max(now, t);
           p = PL.easeTo * (1 - Math.pow(1 - Math.min(tn / PL.easeDur, 1), 3));
           if ((((ready && tn >= PL.minT) || tn >= PL.maxT) && t >= 600) || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
@@ -524,7 +510,7 @@
           var k = Math.min((now - fin) / PL.runDur, 1);
           p = finFrom + (100 - finFrom) * (1 - (1 - k) * (1 - k));
         }
-        W(count, pad(Math.round(p), 3)); bar.style.transform = 'scaleX(' + (p / 100).toFixed(4) + ')';
+        W(count, pad(Math.round(p), 3));
         W(frameEl, pad(Math.round(p / 100 * PL.frames), 4));
         W(elEl, f30(t));
         W(mbps, (12.4 + .45 * Math.sin(t * .009) + .3 * (hash(Math.floor(t / 120)) - .5)).toFixed(1));
@@ -532,13 +518,11 @@
         else { var est = t * (100 - p) / p; remShown = remShown === null ? est : remShown + (est - remShown) * .15; W(remEl, f30(remShown)); }
         var c = 0; for (var q = 0; q < PL.logAt.length; q++) if (p >= PL.logAt[q]) c = q;
         if (c !== cur) { cur = c; setLog(c); }
-        frameAt(p);
-        if (scan) scan.style.transform = 'translate3d(0,' + ((t % 760) / 7.6).toFixed(2) + '%,0)';
-        meter(t, cur === PL.muxLine ? 1 : .16, dt);
+        timelineAt(p);
         if (p >= 100) {
           EV.forEach(function (ev) { win.removeEventListener(ev, skipper); });
           complete();
-          setTimeout(exitAndReveal, PL.hold);
+          setTimeout(exit, PL.hold);
           return;
         }
         requestAnimationFrame(step);
