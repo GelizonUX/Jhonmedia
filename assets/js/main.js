@@ -471,7 +471,7 @@
     }
     function complete() {
       W(count, '100'); count.classList.add('is-cut'); W(frameEl, '0720'); W(remEl, '00:00:00'); W(mbps, '12.4');
-      W(status, PL.status); W(file, PL.lines[3]); timelineAt(100);
+      W(status, rows === 1 ? 'EXPORT COMPLETE' : PL.status); W(file, PL.lines[3]); timelineAt(100);
       pl.classList.add('is-complete'); setLog(lis.length - 1);
     }
     function exit() { // never panel + hero together: fade panel to black, then drop the black and start the hero
@@ -781,10 +781,12 @@
     var H = {}; $$('.sel-h', sel).forEach(function (h) { H[h.getAttribute('data-h')] = h; });
     var A = $('.sel-a', sel), tag = $('.sel-tag', sel), tagN = $('.sel-n', sel), tagName = $('.sel-name', sel);
     var HORDER = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-    var boxes = [], triggers = [], secTop = 0, secBottom = 0, placed = -2, active = -1, lastActive = -1, manual = null, manualTouch = false, first = true;
+    var fx = 0, fy = 0, boxes = [], triggers = [], secTop = 0, secBottom = 0, placed = -2, active = -1, lastActive = -1, manual = null, manualTouch = false, first = true;
 
     function measure() {
-      var wrapTop = docTop(wrap), wrapW = wrap.offsetWidth;
+      var wrapTop = docTop(wrap), wrapW = wrap.offsetWidth, wr = wrap.getBoundingClientRect();
+      // sub-pixel offset of .pr-wrap (fractional gutters at 1024/1280): snap box lines to device pixels
+      fx = ((wr.left % 1) + 1) % 1; fy = (((wr.top + win.pageYOffset) % 1) + 1) % 1;
       var gut = parseFloat(getComputedStyle(sec).paddingLeft) || 16;
       var mob = !mqDesk.matches, padX = mob ? 8 : 10, padY = mob ? 10 : 12;
       boxes = panels.map(function (p) {
@@ -805,7 +807,7 @@
     }
     function T(el, x, y, extra) { el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)' + (extra || ''); }
     function write(i) {
-      var b = boxes[i], x = b.x, y = b.y, w = b.w, h = b.h, cx = x + Math.round(w / 2), cy = y + Math.round(h / 2);
+      var b = boxes[i], x = Math.round(b.x + fx) - fx, y = Math.round(b.y + fy) - fy, w = b.w, h = b.h, cx = x + Math.round(w / 2), cy = y + Math.round(h / 2);
       T(E.t, x, y, ' scaleX(' + (w / 100) + ')'); T(E.b, x, y + h, ' scaleX(' + ((w + 1) / 100) + ')');
       T(E.l, x, y, ' scaleY(' + (h / 100) + ')'); T(E.r, x + w, y, ' scaleY(' + (h / 100) + ')');
       var pts = { nw: [x, y], n: [cx, y], ne: [x + w, y], e: [x + w, cy], se: [x + w, y + h], s: [cx, y + h], sw: [x, y + h], w: [x, cy] };
@@ -826,7 +828,7 @@
       panels.forEach(function (p, j) { p.classList.toggle('is-sel', j === i); });
       if (first) {
         first = false; placed = i;
-        var b = boxes[i], mx = b.x + Math.round(b.w / 2), my = b.y + Math.round(b.h / 2);
+        var b0 = boxes[i], b = { x: Math.round(b0.x + fx) - fx, y: Math.round(b0.y + fy) - fy, w: b0.w, h: b0.h }, mx = b.x + Math.round(b.w / 2), my = b.y + Math.round(b.h / 2);
         // start: edges collapsed about their own midpoints
         T(E.t, mx, b.y, ' scaleX(0)'); T(E.b, mx, b.y + b.h, ' scaleX(0)'); T(E.l, b.x, my, ' scaleY(0)'); T(E.r, b.x + b.w, my, ' scaleY(0)');
         HORDER.forEach(function (k, n) { H[k].style.transitionDelay = (n * 20) + 'ms'; });

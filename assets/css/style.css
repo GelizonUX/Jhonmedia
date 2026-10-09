@@ -141,7 +141,7 @@ main, .footer { position: relative; z-index: 1; }
 
 /* ---------- Grain ---------- */
 .grain {
-  position: fixed; inset: -50%; z-index: 9000; pointer-events: none;
+  position: fixed; inset: -128px; z-index: 9000; /* offsets in @keyframes grain stay within ±128px */ pointer-events: none;
   opacity: var(--grain-o); mix-blend-mode: overlay;
   background-repeat: repeat; background-size: 256px 256px;
 }
