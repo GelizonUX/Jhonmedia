@@ -748,12 +748,13 @@
       manualEls.forEach(function (el) { if (el.hasAttribute('data-split')) { el.__revealed = true; $$('.line', el).forEach(function (l) { l.classList.add('is-in'); }); } else el.classList.add('is-in'); });
       panels.forEach(function (p) { p.classList.add('is-reached', 'is-rolling', 'is-titled'); });
       if (fill) fill.style.transform = 'none';
+      $$('.pr-htrack .hf', wrap).forEach(function (f) { f.style.transform = 'none'; });
     }
     function setStatic() { sec.classList.add('is-static'); revealAll(); if (tip) tip.style.display = 'none'; }
-    if (REDUCED) { setStatic(); return; }
+    var STATIC = REDUCED; // reduced motion: everything revealed, tracks drawn, no tick
 
     // Slot strips: keep the leading 0; the last digit rolls one step, n−1 → n (single clean transition)
-    var strips = panels.map(function (p) {
+    var strips = STATIC ? [] : panels.map(function (p) {
       var num = $('.pr-num', p), txt = num.textContent.trim(), n = parseInt(txt.slice(-1), 10) || 0;
       num.textContent = txt.slice(0, -1);
       var slot = doc.createElement('span'); slot.className = 'slot';
@@ -762,7 +763,7 @@
       slot.appendChild(strip); num.appendChild(slot);
       return { el: strip, n: 1 };
     });
-    fill.style.transform = 'scaleY(0)';
+    if (!STATIC) fill.style.transform = 'scaleY(0)';
 
     function reveal(i) {
       var p = panels[i]; if (p.__in) return; p.__in = true;
@@ -779,34 +780,80 @@
       ps.forEach(function (el, k) { setTimeout(function () { el.classList.add('is-in'); }, 400 + k * 80); });
     }
 
-    var wrapTop = 0, nodes = [], spineTop = 0, spineH = 1, secTop = 0, secBottom = 0, lastLen = -1, active = -1;
+    // Desktop: one horizontal track per grid row (built once, positioned in measure)
+    var tracks = [0, 1].map(function () {
+      var t = doc.createElement('div'); t.className = 'pr-htrack'; t.setAttribute('aria-hidden', 'true');
+      ['hb', 'hf', 'ht'].forEach(function (c) { var e = doc.createElement('i'); e.className = c; t.appendChild(e); });
+      wrap.insertBefore(t, row); return { el: t, f: t.children[1], tip: t.children[2] };
+    });
+    var desk = false, wrapTop = 0, wrapH = 1, nodes = [], spineTop = 0, spineH = 1, secTop = 0, secBottom = 0, lastLen = -1, active = -1;
+    var rows = [], total = 1;
     function measure() {
-      wrapTop = docTop(wrap);
-      // node centre = panel top + node offset + 5.5 (offset* is unaffected by transforms)
-      nodes = panels.map(function (p) { var nd = $('.pr-node', p); return p.offsetTop + nd.offsetTop + 5.5; });
-      spineTop = nodes[0]; spineH = Math.max(1, nodes[N - 1] - nodes[0]);
-      spine.style.top = spineTop + 'px'; spine.style.height = spineH + 'px'; spine.style.bottom = 'auto';
+      desk = mqDesk.matches;
+      wrapTop = docTop(wrap); wrapH = wrap.offsetHeight;
       secTop = docTop(sec); secBottom = secTop + sec.offsetHeight; lastLen = -1;
+      if (desk) {
+        // group panels by row (same offsetTop); track runs from the row's first column edge to its end
+        var byTop = {}, order = [];
+        panels.forEach(function (p, i) { var k = p.offsetTop; if (!byTop[k]) { byTop[k] = []; order.push(k); } byTop[k].push(i); });
+        var acc = 0, wrapW = wrap.offsetWidth;
+        rows = order.map(function (k, r) {
+          var idx = byTop[k], x0 = panels[idx[0]].offsetLeft;
+          var last = panels[idx[idx.length - 1]], xEnd = r === 0 ? wrapW : last.offsetLeft + last.offsetWidth;
+          var len = Math.max(1, xEnd - x0), rw = { y: k, x0: x0, len: len, off: acc, idx: idx };
+          idx.forEach(function (i) { nodes[i] = acc + (panels[i].offsetLeft - x0); });
+          acc += len; return rw;
+        });
+        total = acc;
+        tracks.forEach(function (t, r) {
+          var rw = rows[r]; t.el.classList.toggle('is-on', !!rw);
+          if (rw) { t.el.style.left = rw.x0 + 'px'; t.el.style.top = rw.y + 'px'; t.el.style.width = rw.len + 'px'; }
+        });
+      } else {
+        tracks.forEach(function (t) { t.el.classList.remove('is-on'); });
+        // node centre = panel top + node offset + 5.5 (offset* is unaffected by transforms)
+        nodes = panels.map(function (p) { var nd = $('.pr-node', p); return p.offsetTop + nd.offsetTop + 5.5; });
+        spineTop = nodes[0]; spineH = Math.max(1, nodes[N - 1] - nodes[0]);
+        spine.style.top = spineTop + 'px'; spine.style.height = spineH + 'px'; spine.style.bottom = 'auto';
+      }
     }
-    ticks.push(function () {
-      if (!nodes.length || S.smooth < secTop - S.vh || S.smooth > secBottom) return;
-      // tip position (px from spine top): the line where the viewport's 62% mark sits
-      var len = clamp(S.smooth + S.vh * 0.62 - wrapTop - spineTop, 0, spineH);
-      if (Math.abs(len - lastLen) < 0.25) return; lastLen = len;
-      fill.style.transform = 'scaleY(' + (len / spineH).toFixed(4) + ')';
-      tip.style.transform = 'translate3d(0,' + len.toFixed(1) + 'px,0)';
-      tip.style.opacity = len > 0.5 && len < spineH - 0.5 ? 1 : 0;
+    function reach(len, pos) { // pos(i) = distance along the path of node i
       var a = -1;
-      for (var i = 0; i < N; i++) if (nodes[i] - spineTop <= len + 0.5) a = i;
+      for (var i = 0; i < N; i++) if (pos(i) <= len + 0.5) a = i;
       for (i = 0; i <= a; i++) reveal(i);
       if (a !== active && a >= 0) { if (active >= 0) panels[active].classList.remove('is-active'); panels[a].classList.add('is-active'); active = a; }
+    }
+    if (!STATIC) ticks.push(function () {
+      if (STATIC || !nodes.length || S.smooth < secTop - S.vh || S.smooth > secBottom) return;
+      if (desk) {
+        // section progress: row entering (85% of the viewport) → wrap end at 60% of the viewport
+        var st = wrapTop - 0.85 * S.vh, en = wrapTop + wrapH - 0.6 * S.vh;
+        var d = clamp((S.smooth - st) / Math.max(1, en - st), 0, 1) * total;
+        if (Math.abs(d - lastLen) < 0.25) return; lastLen = d;
+        rows.forEach(function (rw, r) {
+          var t = tracks[r], loc = clamp(d - rw.off, 0, rw.len);
+          t.f.style.transform = 'scaleX(' + (loc / rw.len).toFixed(4) + ')';
+          t.tip.style.transform = 'translate3d(' + loc.toFixed(1) + 'px,0,0)';
+          t.tip.style.opacity = loc > 0.5 && loc < rw.len - 0.5 ? 1 : 0;
+        });
+        reach(d, function (i) { return nodes[i]; });
+      } else {
+        // tip position (px from spine top): the line where the viewport's 62% mark sits
+        var len = clamp(S.smooth + S.vh * 0.62 - wrapTop - spineTop, 0, spineH);
+        if (Math.abs(len - lastLen) < 0.25) return; lastLen = len;
+        fill.style.transform = 'scaleY(' + (len / spineH).toFixed(4) + ')';
+        tip.style.transform = 'translate3d(0,' + len.toFixed(1) + 'px,0)';
+        tip.style.opacity = len > 0.5 && len < spineH - 0.5 ? 1 : 0;
+        reach(len, function (i) { return nodes[i] - spineTop; });
+      }
     });
+    if (STATIC) setStatic();
     measures.push(measure);
     if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(measure);
     listen(mqDesk, measure);
     listen(mqReduced, function (e) {
       if (!e.matches) return;
-      setStatic();
+      STATIC = true; setStatic();
       strips.forEach(function (st) { st.el.style.transition = 'none'; st.el.style.transform = 'translateY(-1em)'; });
     });
     measure();

@@ -620,7 +620,7 @@ html.js .stats:not(.is-in) .stat::before { transform: scaleX(0); }
 }
 
 
-/* ---------- Process: see Process v3 at the end of this file ---------- */
+/* ---------- Process: see Process v4 at the end of this file ---------- */
 
 /* ---------- Brands ---------- */
 .brands { padding: var(--s-9) 0; position: relative; }
@@ -830,11 +830,10 @@ html.menu-open .nav { visibility: hidden; }
 .ft-cols > div > span { min-height: 32px; display: inline-flex; align-items: center; }
 
 
-/* ---------- Process v3: scroll-drawn flow (spine, nodes, branch connectors) ----------
-   Desktop: centre spine, cards alternate left/right. Mobile: spine on the left gutter, cards right.
+/* ---------- Process v4: connector flow ----------
+   Mobile: v3 spine on the left gutter, cards right. Desktop: static row grid + horizontal connector track (below).
    The white spine is a scaleY over a gray track, scrubbed by scroll. Crossing a node reveals that step once. */
 .process { --G: 32px; --nfs: clamp(2.5rem, 12vw, 3.5rem); --ny: calc(var(--nfs) * .5 - 5.5px); }
-@media (min-width: 1024px) { .process { --G: 64px; --nfs: clamp(4rem, 7vw, 8rem); --ny: calc(var(--nfs) * .42 - 5.5px); } }
 .pr-wrap { position: relative; }
 .pr-row { position: relative; display: flex; flex-direction: column; gap: var(--s-6); }
 .pr-panel { position: relative; margin-left: var(--G); display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--s-4); row-gap: var(--s-3); align-items: start; }
@@ -874,37 +873,40 @@ html.menu-open .nav { visibility: hidden; }
 /* hidden-until-reached (JS only, animated mode) */
 html.js .process:not(.is-static) .pr-panel:not(.is-rolling) .pr-num { opacity: 0; transition: none; }
 /* nothing of an unreached step renders except its dim node (masked title slivers, ticks, strips) */
-html.js .process:not(.is-static) .pr-panel:not(.is-reached) > :not(.pr-node) { visibility: hidden; }
+html.js .process:not(.is-static) .pr-panel:not(.is-reached) > :not(.pr-node):not(.pr-vline) { visibility: hidden; }
 html.js .process:not(.is-static) .pr-panel:not(.is-titled) > h3 { visibility: hidden; }
 html.js .process [data-reveal-manual] { transform: translate3d(0, 12px, 0); }
 html.js .process [data-reveal-manual].is-in { transform: none; transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
 
-/* Desktop: centre spine, alternating cards (odd left, mirrored; even right) */
+/* Desktop (v4): the static row/grid (3 + 2 at 1024–1279, 5 from 1280) with a horizontal connector track
+   across the top of each row. Nodes sit where each column hairline meets the track; the hairline then
+   draws down into the card. */
+.pr-vline, .pr-htrack { display: none; }
 @media (min-width: 1024px) {
-  .pr-spine { left: 50%; }
-  /* 2-column grid; each card spans two rows and the next card starts one row lower, so the zigzag
-     offsets by half a card without ever overlapping cards on the same side */
-  .pr-row { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(var(--G) * 2); row-gap: var(--s-5); grid-auto-rows: auto; }
-  .pr-panel { margin-left: 0; display: block; }
-  .pr-panel:nth-child(1) { grid-column: 1; grid-row: 1 / 3; }
-  .pr-panel:nth-child(2) { grid-column: 2; grid-row: 2 / 4; }
-  .pr-panel:nth-child(3) { grid-column: 1; grid-row: 3 / 5; }
-  .pr-panel:nth-child(4) { grid-column: 2; grid-row: 4 / 6; }
-  .pr-panel:nth-child(5) { grid-column: 1; grid-row: 5 / 7; }
+  .process { --nfs: clamp(4rem, 8vw, 9rem); }
+  .pr-spine, .pr-branch { display: none; }
+  .pr-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-8) var(--gap); }
+  .pr-panel { margin-left: 0; display: flex; flex-direction: column; gap: var(--s-4); padding: var(--s-6) 0 0 var(--s-5); }
   .pr-num { display: block; }
-  .pr-panel .h1 { margin-top: -.9em; position: relative; }
-  .pr-panel > p { margin-top: var(--s-4); }
-  .pr-panel:nth-child(odd) { text-align: right; }
-  .pr-panel:nth-child(odd) p { margin-left: auto; }
-  .pr-panel:nth-child(odd) .pr-node { left: auto; right: calc(var(--G) * -1 - 5.5px); }
-  .pr-panel:nth-child(odd) .pr-branch { left: 100%; }
-  .pr-panel:nth-child(odd) .pr-branch i { transform-origin: 100% 50%; }
-  .pr-panel:nth-child(odd) .pr-branch::after { right: auto; left: -2px; }
+  .pr-panel .h1 { margin-top: -.9em; position: relative; min-height: 2.2em; min-height: 2lh; }
+  .pr-node { top: -5px; left: -5px; } /* centred on the 1px track and hairline */
+  .pr-vline { display: block; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.08); }
+  .pr-vline i { position: absolute; inset: 0; display: block; background: rgba(255,255,255,.34); transform-origin: 50% 0; transform: scaleY(0); transition: transform 400ms var(--ease-out) 120ms; }
+  .pr-panel.is-reached .pr-vline i { transform: none; }
+  .pr-htrack.is-on { display: block; position: absolute; left: 0; top: 0; height: 1px; pointer-events: none; }
+  .pr-htrack > i { position: absolute; display: block; }
+  .pr-htrack .hb { inset: 0; background: var(--c-ink-3); }
+  .pr-htrack .hf { inset: 0; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+  .pr-htrack .ht { left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px 2px rgba(255,255,255,.45); opacity: 0; }
 }
-@media (min-width: 1280px) { .pr-panel .h1 { font-size: clamp(1.75rem, 2.6vw, 2.75rem); } }
+@media (min-width: 1280px) {
+  .pr-row { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .pr-panel { padding-left: var(--s-4); }
+  .pr-panel .h1 { font-size: clamp(1.5rem, 2vw, 2.25rem); }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .pr-node, .pr-node::before, .pr-branch i, .pr-branch::after, .pr-num { transition: none !important; }
+  .pr-node, .pr-node::before, .pr-branch i, .pr-branch::after, .pr-vline i, .pr-num { transition: none !important; }
   .pr-ring { animation: none !important; }
 }
-.process.is-static .pr-tip { display: none; }
+.process.is-static .pr-tip, .process.is-static .ht { display: none; }
