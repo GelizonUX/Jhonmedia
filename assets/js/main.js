@@ -736,16 +736,23 @@
   /* ---------- Edit timeline: lives in anatomy.js (docs/TIMELINE-V2.md) ---------- */
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
-  /* ---------- Process v2: selected layer (docs/PROCESS-V2.md §7) ---------- */
+  /* ---------- Process v3: scroll-drawn flow ----------
+     A white spine (scaleY over a gray track) is scrubbed by scroll. When its tip crosses a node the step
+     reveals once: node pops + pulse, branch draws out, then number roll → title → body → label. */
   function initProcess() {
-    var sec = $('#process'), wrap = $('#pr-wrap'), row = $('#pr-row'), sel = $('#pr-sel');
-    if (!sec || !wrap || !row || !sel) return;
+    var sec = $('#process'), wrap = $('#pr-wrap'), row = $('#pr-row'), spine = $('.pr-spine', wrap), fill = $('#pr-fill'), tip = $('#pr-tip');
+    if (!sec || !wrap || !row || !spine) return;
     var panels = $$('.pr-panel', row), N = panels.length;
     var manualEls = $$('[data-split-manual], [data-reveal-manual]', row);
-    function revealAll() { manualEls.forEach(function (el) { if (el.hasAttribute('data-split')) { el.__revealed = true; $$('.line', el).forEach(function (l) { l.classList.add('is-in'); }); } else el.classList.add('is-in'); }); }
-    if (REDUCED) { sec.classList.add('is-static'); revealAll(); return; }
+    function revealAll() {
+      manualEls.forEach(function (el) { if (el.hasAttribute('data-split')) { el.__revealed = true; $$('.line', el).forEach(function (l) { l.classList.add('is-in'); }); } else el.classList.add('is-in'); });
+      panels.forEach(function (p) { p.classList.add('is-reached'); });
+      if (fill) fill.style.transform = 'none';
+    }
+    function setStatic() { sec.classList.add('is-static'); revealAll(); if (tip) tip.style.display = 'none'; }
+    if (REDUCED) { setStatic(); return; }
 
-    // Slot strips: keep the leading 0 as text, roll the last digit 0 → n
+    // Slot strips: keep the leading 0, roll the last digit 0 → n on reveal
     var strips = panels.map(function (p) {
       var num = $('.pr-num', p), txt = num.textContent.trim(), n = parseInt(txt.slice(-1), 10) || 0;
       num.textContent = txt.slice(0, -1);
@@ -755,119 +762,47 @@
       slot.appendChild(strip); num.appendChild(slot);
       return { el: strip, n: n };
     });
+    fill.style.transform = 'scaleY(0)';
 
-    // Entrance: once per panel
-    function enter(i, k) {
+    function reveal(i) {
       var p = panels[i]; if (p.__in) return; p.__in = true;
+      p.classList.add('is-reached');
       var st = strips[i];
-      st.el.style.transition = 'transform 900ms var(--ease-out) ' + (k * 90) + 'ms';
+      st.el.style.transition = 'transform 600ms var(--ease-out) 240ms';
       st.el.style.transform = 'translateY(' + (-st.n) + 'em)';
-      var h = $('h3', p);
-      setTimeout(function () { if (h.classList.contains('is-split')) revealLines(h, 80); else h.__revealed = true; }, 200 + k * 90);
-      $$('[data-reveal-manual]', p).forEach(function (el) { setTimeout(function () { el.classList.add('is-in'); }, 320 + k * 90); });
+      var h = $('h3', p), ps = $$('[data-reveal-manual]', p);
+      setTimeout(function () { if (h.classList.contains('is-split')) revealLines(h, 80); else h.__revealed = true; }, 320);
+      ps.forEach(function (el, k) { setTimeout(function () { el.classList.add('is-in'); }, 400 + k * 80); });
     }
-    if ('IntersectionObserver' in win) {
-      if (mqDesk.matches) {
-        var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { io.disconnect(); panels.forEach(function (p, i) { enter(i, i); }); } }, { threshold: 0.25 });
-        io.observe(row);
-      } else {
-        var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { io2.unobserve(e.target); enter(panels.indexOf(e.target), 0); } }); }, { threshold: 0.4 });
-        panels.forEach(function (p) { io2.observe(p); });
-      }
-    } else panels.forEach(function (p, i) { enter(i, 0); });
 
-    // Box parts
-    var E = { t: $('.sel-et', sel), r: $('.sel-er', sel), b: $('.sel-eb', sel), l: $('.sel-el', sel) };
-    var H = {}; $$('.sel-h', sel).forEach(function (h) { H[h.getAttribute('data-h')] = h; });
-    var A = $('.sel-a', sel), tag = $('.sel-tag', sel), tagN = $('.sel-n', sel), tagName = $('.sel-name', sel);
-    var HORDER = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-    var fx = 0, fy = 0, boxes = [], triggers = [], secTop = 0, secBottom = 0, placed = -2, active = -1, lastActive = -1, manual = null, manualTouch = false, first = true;
-
+    var wrapTop = 0, nodes = [], spineTop = 0, spineH = 1, secTop = 0, secBottom = 0, lastLen = -1, active = -1;
     function measure() {
-      var wrapTop = docTop(wrap), wrapW = wrap.offsetWidth, wr = wrap.getBoundingClientRect();
-      // sub-pixel offset of .pr-wrap (fractional gutters at 1024/1280): snap box lines to device pixels
-      fx = ((wr.left % 1) + 1) % 1; fy = (((wr.top + win.pageYOffset) % 1) + 1) % 1;
-      var gut = parseFloat(getComputedStyle(sec).paddingLeft) || 16;
-      var mob = !mqDesk.matches, padX = mob ? 8 : 10, padY = mob ? 10 : 12;
-      boxes = panels.map(function (p) {
-        var x = p.offsetLeft - padX, y = p.offsetTop - padY, w = p.offsetWidth + 2 * padX, h = p.offsetHeight + 2 * padY;
-        if (x < -gut + 6) { w -= (-gut + 6) - x; x = -gut + 6; }
-        if (x + w > wrapW + gut - 6) w = wrapW + gut - 6 - x;
-        return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h), top: p.offsetTop, ph: p.offsetHeight };
-      });
-      // rows: panels sharing offsetTop
-      var rowsMap = {}; boxes.forEach(function (b, i) { (rowsMap[b.top] = rowsMap[b.top] || []).push(i); });
-      triggers = new Array(N);
-      Object.keys(rowsMap).forEach(function (k) {
-        var idx = rowsMap[k], rh = Math.max.apply(null, idx.map(function (i) { return boxes[i].ph; }));
-        idx.forEach(function (i, j) { triggers[i] = wrapTop + Number(k) + (j / idx.length) * Math.max(rh, 0.45 * S.vh); });
-      });
-      secTop = docTop(sec); secBottom = secTop + sec.offsetHeight;
-      if (placed >= 0) { sel.classList.remove('is-live'); write(placed); requestAnimationFrame(function () { requestAnimationFrame(function () { sel.classList.add('is-live'); }); }); }
+      wrapTop = docTop(wrap);
+      // node centre = panel top + node offset + 5.5 (offset* is unaffected by transforms)
+      nodes = panels.map(function (p) { var nd = $('.pr-node', p); return p.offsetTop + nd.offsetTop + 5.5; });
+      spineTop = nodes[0]; spineH = Math.max(1, nodes[N - 1] - nodes[0]);
+      spine.style.top = spineTop + 'px'; spine.style.height = spineH + 'px'; spine.style.bottom = 'auto';
+      secTop = docTop(sec); secBottom = secTop + sec.offsetHeight; lastLen = -1;
     }
-    function T(el, x, y, extra) { el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)' + (extra || ''); }
-    function write(i) {
-      var b = boxes[i], x = Math.round(b.x + fx) - fx, y = Math.round(b.y + fy) - fy, w = b.w, h = b.h, cx = x + Math.round(w / 2), cy = y + Math.round(h / 2);
-      T(E.t, x, y, ' scaleX(' + (w / 100) + ')'); T(E.b, x, y + h, ' scaleX(' + ((w + 1) / 100) + ')');
-      T(E.l, x, y, ' scaleY(' + (h / 100) + ')'); T(E.r, x + w, y, ' scaleY(' + (h / 100) + ')');
-      var pts = { nw: [x, y], n: [cx, y], ne: [x + w, y], e: [x + w, cy], se: [x + w, y + h], s: [cx, y + h], sw: [x, y + h], w: [x, cy] };
-      HORDER.forEach(function (k) { T(H[k], pts[k][0] - 3, pts[k][1] - 3); });
-      // Anchor sits in the empty top-right corner of the box (beside the ghost number), never over copy
-      T(A, x + w - 22, y + 18); T(tag, x, y - 22);
-    }
-    function setTag(i) {
-      var p = panels[i];
-      tag.style.transition = 'none'; tag.style.opacity = '0';
-      requestAnimationFrame(function () {
-        tagN.textContent = pad(i + 1) + ' / ' + pad(N); tagName.textContent = p.getAttribute('data-name') || '';
-        requestAnimationFrame(function () { tag.style.transition = 'opacity 120ms linear'; tag.style.opacity = ''; });
-      });
-    }
-    function place(i) {
-      if (i < 0) { sel.classList.remove('is-on'); placed = -1; panels.forEach(function (p) { p.classList.remove('is-sel'); }); return; }
-      panels.forEach(function (p, j) { p.classList.toggle('is-sel', j === i); });
-      if (first) {
-        first = false; placed = i;
-        var b0 = boxes[i], b = { x: Math.round(b0.x + fx) - fx, y: Math.round(b0.y + fy) - fy, w: b0.w, h: b0.h }, mx = b.x + Math.round(b.w / 2), my = b.y + Math.round(b.h / 2);
-        // start: edges collapsed about their own midpoints
-        T(E.t, mx, b.y, ' scaleX(0)'); T(E.b, mx, b.y + b.h, ' scaleX(0)'); T(E.l, b.x, my, ' scaleY(0)'); T(E.r, b.x + b.w, my, ' scaleY(0)');
-        HORDER.forEach(function (k, n) { H[k].style.transitionDelay = (n * 20) + 'ms'; });
-        tagN.textContent = pad(i + 1) + ' / ' + pad(N); tagName.textContent = panels[i].getAttribute('data-name') || '';
-        // place handles/tag/anchor at final spots, edges collapsed
-        var save = [E.t.style.transform, E.b.style.transform, E.l.style.transform, E.r.style.transform];
-        write(i); E.t.style.transform = save[0]; E.b.style.transform = save[1]; E.l.style.transform = save[2]; E.r.style.transform = save[3];
-        sel.classList.add('is-on');
-        requestAnimationFrame(function () { requestAnimationFrame(function () {
-          sel.classList.add('is-draw', 'is-shown'); write(i);
-          setTimeout(function () { sel.classList.remove('is-draw'); HORDER.forEach(function (k) { H[k].style.transitionDelay = ''; }); sel.classList.add('is-live'); }, 460);
-        }); });
-        return;
-      }
-      sel.classList.add('is-on');
-      if (placed !== i) setTag(i);
-      placed = i; write(i);
-    }
-
     ticks.push(function () {
-      if (!boxes.length || S.y < secTop - S.vh || S.y > secBottom) return;
-      var line = S.y + 0.65 * S.vh, a = -1;
-      for (var i = 0; i < N; i++) if (triggers[i] <= line) a = i;
-      if (a !== lastActive) { lastActive = a; active = a; if (manualTouch) { manual = null; manualTouch = false; } }
-      var eff = manual !== null ? manual : active;
-      if (eff !== placed) place(eff);
+      if (!nodes.length || S.smooth < secTop - S.vh || S.smooth > secBottom) return;
+      // tip position (px from spine top): the line where the viewport's 62% mark sits
+      var len = clamp(S.smooth + S.vh * 0.62 - wrapTop - spineTop, 0, spineH);
+      if (Math.abs(len - lastLen) < 0.25) return; lastLen = len;
+      fill.style.transform = 'scaleY(' + (len / spineH).toFixed(4) + ')';
+      tip.style.transform = 'translate3d(0,' + len.toFixed(1) + 'px,0)';
+      tip.style.opacity = len > 0.5 && len < spineH - 0.5 ? 1 : 0;
+      var a = -1;
+      for (var i = 0; i < N; i++) if (nodes[i] - spineTop <= len + 0.5) a = i;
+      for (i = 0; i <= a; i++) reveal(i);
+      if (a !== active && a >= 0) { if (active >= 0) panels[active].classList.remove('is-active'); panels[a].classList.add('is-active'); active = a; }
     });
-    panels.forEach(function (p, i) {
-      on(p, 'pointerenter', function (e) { if (FINE && e.pointerType === 'mouse') { manual = i; manualTouch = false; } });
-      on(p, 'click', function () { if (!FINE) { manual = i; manualTouch = true; } });
-    });
-    on(row, 'pointerleave', function (e) { if (e.pointerType === 'mouse' && !manualTouch) manual = null; });
-
     measures.push(measure);
     if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(measure);
     listen(mqDesk, measure);
     listen(mqReduced, function (e) {
       if (!e.matches) return;
-      sec.classList.add('is-static'); revealAll();
+      setStatic();
       strips.forEach(function (st) { st.el.style.transition = 'none'; st.el.style.transform = 'translateY(' + (-st.n) + 'em)'; });
     });
     measure();

@@ -700,7 +700,7 @@ Listen for changes to both and degrade live.
 See 3.5. Plus: as the playhead crosses each clip boundary, a 1-frame "cut" flash: the viewer timecode briefly switches to bold for 80ms. Tiny, but it's the detail.
 
 ### 4.7 Process (replaced)
-Superseded by `docs/PROCESS-V2.md` §7: static grid with an After Effects-style selection box gliding between steps, plus a one-time slot-roll entrance. The pinned horizontal scroll is retired.
+Process v3 (current): a scroll-drawn flow. A 1px spine (centre on desktop, left on mobile) is scrubbed by scroll; when its tip reaches a node, that step reveals once (node pop + pulse, branch connector draws, number rolls, title/body/label rise). Not pinned. The v2 selection box from `docs/PROCESS-V2.md` was replaced at the client's request.
 
 ### 4.8 Marquees
 - One reusable component `[data-marquee]` with `data-speed` and `data-direction`.
