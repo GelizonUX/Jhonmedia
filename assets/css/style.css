@@ -872,9 +872,10 @@ html.menu-open .nav { visibility: hidden; }
 @keyframes pr-breathe { 0%, 100% { transform: scale(1); opacity: 0; } 50% { transform: scale(2); opacity: .28; } }
 
 /* hidden-until-reached (JS only, animated mode) */
-html.js .process:not(.is-static) .pr-panel:not(.is-reached) .pr-num { opacity: 0; }
+html.js .process:not(.is-static) .pr-panel:not(.is-rolling) .pr-num { opacity: 0; transition: none; }
 /* nothing of an unreached step renders except its dim node (masked title slivers, ticks, strips) */
 html.js .process:not(.is-static) .pr-panel:not(.is-reached) > :not(.pr-node) { visibility: hidden; }
+html.js .process:not(.is-static) .pr-panel:not(.is-titled) > h3 { visibility: hidden; }
 html.js .process [data-reveal-manual] { transform: translate3d(0, 12px, 0); }
 html.js .process [data-reveal-manual].is-in { transform: none; transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
 

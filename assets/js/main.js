@@ -746,21 +746,21 @@
     var manualEls = $$('[data-split-manual], [data-reveal-manual]', row);
     function revealAll() {
       manualEls.forEach(function (el) { if (el.hasAttribute('data-split')) { el.__revealed = true; $$('.line', el).forEach(function (l) { l.classList.add('is-in'); }); } else el.classList.add('is-in'); });
-      panels.forEach(function (p) { p.classList.add('is-reached'); });
+      panels.forEach(function (p) { p.classList.add('is-reached', 'is-rolling', 'is-titled'); });
       if (fill) fill.style.transform = 'none';
     }
     function setStatic() { sec.classList.add('is-static'); revealAll(); if (tip) tip.style.display = 'none'; }
     if (REDUCED) { setStatic(); return; }
 
-    // Slot strips: keep the leading 0, roll the last digit 0 → n on reveal
+    // Slot strips: keep the leading 0; the last digit rolls one step, n−1 → n (single clean transition)
     var strips = panels.map(function (p) {
       var num = $('.pr-num', p), txt = num.textContent.trim(), n = parseInt(txt.slice(-1), 10) || 0;
       num.textContent = txt.slice(0, -1);
       var slot = doc.createElement('span'); slot.className = 'slot';
       var strip = doc.createElement('span'); strip.className = 'strip';
-      for (var d = 0; d <= n; d++) { var sp = doc.createElement('span'); sp.textContent = d; strip.appendChild(sp); }
+      [Math.max(0, n - 1), n].forEach(function (d) { var sp = doc.createElement('span'); sp.textContent = d; strip.appendChild(sp); });
       slot.appendChild(strip); num.appendChild(slot);
-      return { el: strip, n: n };
+      return { el: strip, n: 1 };
     });
     fill.style.transform = 'scaleY(0)';
 
@@ -768,10 +768,14 @@
       var p = panels[i]; if (p.__in) return; p.__in = true;
       p.classList.add('is-reached');
       var st = strips[i];
-      st.el.style.transition = 'transform 600ms var(--ease-out) 240ms';
-      st.el.style.transform = 'translateY(' + (-st.n) + 'em)';
+      // number stays at opacity 0 until the roll starts; both happen in the same frame
+      setTimeout(function () {
+        st.el.style.transition = 'transform 500ms var(--ease-out)';
+        st.el.style.transform = 'translateY(-1em)';
+        p.classList.add('is-rolling');
+      }, 240);
       var h = $('h3', p), ps = $$('[data-reveal-manual]', p);
-      setTimeout(function () { if (h.classList.contains('is-split')) revealLines(h, 80); else h.__revealed = true; }, 320);
+      setTimeout(function () { p.classList.add('is-titled'); if (h.classList.contains('is-split')) revealLines(h, 80); else h.__revealed = true; }, 320);
       ps.forEach(function (el, k) { setTimeout(function () { el.classList.add('is-in'); }, 400 + k * 80); });
     }
 
@@ -803,7 +807,7 @@
     listen(mqReduced, function (e) {
       if (!e.matches) return;
       setStatic();
-      strips.forEach(function (st) { st.el.style.transition = 'none'; st.el.style.transform = 'translateY(' + (-st.n) + 'em)'; });
+      strips.forEach(function (st) { st.el.style.transition = 'none'; st.el.style.transform = 'translateY(-1em)'; });
     });
     measure();
   }
