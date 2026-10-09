@@ -410,7 +410,7 @@
     var hero = $('.hero'); if (hero) hero.classList.add('is-in');
   }
   function clearBusy() { var m = $('#main'); if (m) m.setAttribute('aria-busy', 'false'); }
-  // Export panel (docs/PRELOADER-OPTIONS.md §7). Beats trimmed so the slow-load cap is gone by ~3.1s.
+  // Export panel v2 (docs/PRELOADER-OPTIONS.md §7 + Program preview). Plays on every load.
   var PL = {
     names: ['JHON_MEDIA_PORTFOLIO.mp4', 'JHON_MEDIA_PORTFOLIO_v2.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL.mp4',
             'JHON_MEDIA_PORTFOLIO_FINAL_v2.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL_FINAL.mp4', 'JHON_MEDIA_PORTFOLIO_FINAL_v7.mp4'],
@@ -420,43 +420,78 @@
     easeTo: 90, easeDur: 1300,         // 0 → 90 cubic-out
     minT: 1500, maxT: 1900,            // finish window
     skipAfter: 800, runDur: 180,       // run to 100, quad-out
-    hold: 200,                         // hold on EXPORT COMPLETE
-    heroAt: 480, doneAt: 820,          // after exit starts (exit is 800ms; hero at 60%)
+    hold: 260,                         // hold on EXPORT COMPLETE
+    expand: 680,                       // tile FLIPs to fill the viewport (matches CSS)
+    fade: 380,                         // frame cross-fades into the hero (CSS is 360ms)
+    heroIn: 180,                       // hero entrance starts this far into the cross-fade
+    buckets: 60, prodAt: 22, word1At: 46, word2At: 66, muxLine: 6,
     remFrom: 8, watchdog: 4500
   };
   function f30(ms) { // MM:SS:FF @ 30fps
     var fr = Math.max(0, Math.floor(ms * PL.fps / 1000)), s = Math.floor(fr / PL.fps);
     return pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60) + ':' + pad(fr % PL.fps);
   }
+  function hash(n) { var x = Math.sin(n * 12.9898) * 43758.5453; return x - Math.floor(x); }
   function initPreloader() {
     var pl = $('#preloader');
-    var seen = false;
-    try { seen = sessionStorage.getItem('jm-preloader') === '1'; } catch (e) { /* storage blocked */ }
-    if (!pl || seen) { root.classList.add('pl-skip'); clearBusy(); finishLoad(); return; }
+    if (!pl) { root.classList.add('pl-skip'); clearBusy(); finishLoad(); return; }
     var heroFired = false, wd;
     function hero() { if (!heroFired) { heroFired = true; finishLoad(); } }
     function done() { pl.classList.add('is-done'); clearBusy(); clearTimeout(wd); }
     wd = setTimeout(function () { hero(); done(); }, PL.watchdog); // armed before anything can throw
-    try { sessionStorage.setItem('jm-preloader', '1'); } catch (e) { /* ignore */ }
 
-    var count = $('#pl-count'), bar = $('#pl-bar'), edge = $('#pl-edge'), file = $('#pl-file'), status = $('#pl-status');
+    var count = $('#pl-count'), bar = $('#pl-bar'), file = $('#pl-file'), status = $('#pl-status'), mbps = $('#pl-mbps');
     var frameEl = $('#pl-frame'), elEl = $('#pl-el'), remEl = $('#pl-rem'), log = $('#pl-log'), lis = $$('li', log);
+    var pvBg = $('#pv-bg'), pvVid = $('#pv-vid'), pvTc = $('#pv-tc'), scan = $('#pv-scan'), prod = $('#pv-prod');
+    var w1 = $('#pv-w1'), w2 = $('#pv-w2'), mL = $('#pv-l'), mR = $('#pv-r'), bk = $('#pv-buckets');
     var rows = matchMedia('(min-width: 768px)').matches ? 3 : 1;
-    function W(el, v) { if (el.__v !== v) { el.__v = v; el.textContent = v; } }
+    function W(el, v) { if (el && el.__v !== v) { el.__v = v; el.textContent = v; } }
+    function C(el, c, onn) { var k = '__' + c; if (el && el[k] !== onn) { el[k] = onn; el.classList.toggle(c, onn); } }
     function setLog(cur) {
       lis.forEach(function (li, j) { li.classList.toggle('is-past', j < cur); li.classList.toggle('is-cur', j === cur); });
       log.style.setProperty('--shift', Math.max(0, cur - (rows - 1)));
     }
-    function setBar(p) { var tr = 'scaleX(' + (p / 100).toFixed(4) + ')'; bar.style.transform = tr; edge.style.transform = tr; }
+    // Render buckets in a scattered (seeded) order
+    var cells = [], order = [], rnd = mulberry32(11), i;
+    if (bk) {
+      for (i = 0; i < PL.buckets; i++) { var c = doc.createElement('i'); c.appendChild(doc.createElement('b')); bk.appendChild(c); cells.push(c); order.push(i); }
+      for (i = order.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), tmp = order[i]; order[i] = order[j]; order[j] = tmp; }
+    }
+    function frameAt(p) { // everything inside the Program tile is a function of progress
+      var n = Math.floor(clamp(p / 95, 0, 1) * PL.buckets);
+      for (var q = 0; q < order.length; q++) { var cl = cells[order[q]]; C(cl, 'is-done', q < n); C(cl, 'is-act', p < 100 && q >= n && q < n + 3); }
+      C(prod, 'is-on', p >= PL.prodAt); C(w1, 'is-on', p >= PL.word1At); C(w2, 'is-on', p >= PL.word2At);
+      W(pvTc, f30(p / 100 * PL.frames / PL.fps * 1000));
+    }
+    function meter(t, amp, dt) {
+      [mL, mR].forEach(function (m, ch) {
+        if (!m) return;
+        var v = amp * (0.22 + 0.78 * (0.6 * hash(Math.floor(t / 55) + ch * 97) + 0.4 * (0.5 + 0.5 * Math.sin(t * 0.013 + ch * 2.1))));
+        m.__lvl = Math.max(v, (m.__lvl || 0) - 2.2 * dt); // VU-style fall-off
+        m.style.transform = 'scaleY(' + Math.max(.04, m.__lvl).toFixed(3) + ')';
+      });
+    }
     function complete() {
-      W(count, '100'); count.classList.add('is-cut'); W(frameEl, '720'); W(remEl, '00:00:00');
-      W(status, 'EXPORT COMPLETE'); W(file, PL.names[5]); setBar(100);
-      pl.classList.add('is-complete'); setLog(7);
+      W(count, '100'); count.classList.add('is-cut'); W(frameEl, '0720'); W(remEl, '00:00:00'); W(mbps, '12.4');
+      W(status, 'EXPORT COMPLETE'); W(file, PL.names[5]); bar.style.transform = 'scaleX(1)';
+      pl.classList.add('is-complete'); setLog(7); frameAt(100); meter(0, 0, 1);
+    }
+    function exitAndReveal() {
+      // FLIP: one cached read, then transforms only. Background fills the viewport, the 9:16 video "contains".
+      var R = pvBg.getBoundingClientRect(), vw = root.clientWidth, vh = win.innerHeight;
+      var s = Math.min(vw / R.width, vh / R.height), fx = (vw - R.width * s) / 2, fy = (vh - R.height * s) / 2;
+      pl.classList.add('is-exit');
+      requestAnimationFrame(function () {
+        pvBg.style.transform = 'translate3d(' + (-R.left).toFixed(1) + 'px,' + (-R.top).toFixed(1) + 'px,0) scale(' + (vw / R.width).toFixed(4) + ',' + (vh / R.height).toFixed(4) + ')';
+        pvVid.style.transform = 'translate3d(' + (fx - R.left).toFixed(1) + 'px,' + (fy - R.top).toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
+      });
+      // Cross-fade first, hero entrance ~half-way in, so the headline rises out of black instead of double-exposing the frame.
+      setTimeout(function () { pl.classList.add('is-fade'); setTimeout(hero, PL.heroIn); setTimeout(done, PL.fade); }, PL.expand);
     }
 
     if (REDUCED) {
       complete(); W(elEl, '00:00:00');
-      setTimeout(function () { pl.classList.add('is-fade'); hero(); setTimeout(done, 200); }, 300);
+      setTimeout(function () { pl.classList.add('is-fade'); hero(); setTimeout(done, PL.fade); }, 300);
       return;
     }
 
@@ -466,41 +501,38 @@
       waits.push(new Promise(function (res) { if (img.__done || img.complete) return res(); img.addEventListener('load', res); img.addEventListener('error', res); }));
     });
     Promise.all(waits).then(function () { ready = true; }, function () { ready = true; });
-    var start = performance.now(), fin = null, finFrom = 0, nameI = 0, cur = 0, remShown = null;
+    var start = performance.now(), last = start, fin = null, finFrom = 0, nameI = 0, cur = 0, remShown = null;
     var EV = ['wheel', 'touchmove', 'keydown', 'pointerdown'];
     var skipper = function () { if (performance.now() - start >= PL.skipAfter) skip = true; };
     EV.forEach(function (ev) { on(win, ev, skipper, { passive: true }); });
 
     (function step(now) {
       try {
-        var t = now - start, p;
+        var t = now - start, dt = Math.min((now - last) / 1000, .1), p; last = now;
         var ni = Math.min(5, Math.floor(t / PL.nameStep));
         if (ni !== nameI) { nameI = ni; W(file, PL.names[ni]); }
         if (fin === null) {
-          // Progress and the finish window run on the navigation clock, so a late-booting main.js
-          // doesn't replay the whole run on top of the wait; the filename gag stays on the local clock.
-          var tn = Math.max(now, t);
-          p = PL.easeTo * (1 - Math.pow(1 - Math.min(tn / PL.easeDur, 1), 3));
-          if ((((ready && tn >= PL.minT) || tn >= PL.maxT) && t >= 600) || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
+          p = PL.easeTo * (1 - Math.pow(1 - Math.min(t / PL.easeDur, 1), 3));
+          if ((ready && t >= PL.minT) || t >= PL.maxT || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
         } else {
           var k = Math.min((now - fin) / PL.runDur, 1);
           p = finFrom + (100 - finFrom) * (1 - (1 - k) * (1 - k));
         }
-        W(count, pad(Math.round(p), 3)); setBar(p);
-        W(frameEl, pad(Math.round(p / 100 * PL.frames), 3));
+        W(count, pad(Math.round(p), 3)); bar.style.transform = 'scaleX(' + (p / 100).toFixed(4) + ')';
+        W(frameEl, pad(Math.round(p / 100 * PL.frames), 4));
         W(elEl, f30(t));
+        W(mbps, (12.4 + .45 * Math.sin(t * .009) + .3 * (hash(Math.floor(t / 120)) - .5)).toFixed(1));
         if (p < PL.remFrom) W(remEl, '--:--:--');
         else { var est = t * (100 - p) / p; remShown = remShown === null ? est : remShown + (est - remShown) * .15; W(remEl, f30(remShown)); }
-        var c = 0; for (var i = 0; i < PL.logAt.length; i++) if (p >= PL.logAt[i]) c = i;
+        var c = 0; for (var q = 0; q < PL.logAt.length; q++) if (p >= PL.logAt[q]) c = q;
         if (c !== cur) { cur = c; setLog(c); }
+        frameAt(p);
+        if (scan) scan.style.transform = 'translate3d(0,' + ((t % 760) / 7.6).toFixed(2) + '%,0)';
+        meter(t, cur === PL.muxLine ? 1 : .16, dt);
         if (p >= 100) {
           EV.forEach(function (ev) { win.removeEventListener(ev, skipper); });
           complete();
-          setTimeout(function () {
-            pl.classList.add('is-exit');
-            setTimeout(hero, PL.heroAt);
-            setTimeout(done, PL.doneAt);
-          }, PL.hold);
+          setTimeout(exitAndReveal, PL.hold);
           return;
         }
         requestAnimationFrame(step);
