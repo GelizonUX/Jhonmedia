@@ -167,7 +167,9 @@ html.js .preloader {
   animation: pl-failsafe 1ms linear 6000ms forwards;
 }
 @keyframes pl-failsafe { to { opacity: 0; visibility: hidden; } }
-html.js .preloader.is-fade { opacity: 0; transition: opacity 360ms linear; }
+/* Hand-off: .is-fade takes the expanded frame to black (panel stays opaque), then .is-out drops the black. */
+html.js .preloader.is-fade .pv-bg, html.js .preloader.is-fade .pv-vid { opacity: 0; transition: transform 680ms var(--ease-in-out), opacity 260ms linear; }
+html.js .preloader.is-out { opacity: 0; transition: opacity 160ms linear; }
 html.js .preloader.is-done, html.js.pl-skip .preloader { display: none; }
 
 .pl-inner { position: absolute; inset: 0; padding: var(--gutter); }
@@ -264,6 +266,7 @@ html.js .preloader.is-done, html.js.pl-skip .preloader { display: none; }
 .preloader.is-exit .pl-top, .preloader.is-exit .pl-left, .preloader.is-exit .pv-head,
 .preloader.is-exit .pv-meter, .preloader.is-exit .pv-line { opacity: 0; transition: opacity 280ms linear; }
 .preloader.is-exit .pv-bg, .preloader.is-exit .pv-vid { transition: transform 680ms var(--ease-in-out); }
+.preloader.is-exit .pv-buckets, .preloader.is-exit .pv-scan, .preloader.is-exit .pv-meter { display: none; } /* less to raster while scaling */
 
 @media (prefers-reduced-motion: reduce) {
   .preloader .rec-dot { animation: none !important; }

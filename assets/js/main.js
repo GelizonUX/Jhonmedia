@@ -422,8 +422,8 @@
     skipAfter: 800, runDur: 180,       // run to 100, quad-out
     hold: 260,                         // hold on EXPORT COMPLETE
     expand: 680,                       // tile FLIPs to fill the viewport (matches CSS)
-    fade: 380,                         // frame cross-fades into the hero (CSS is 360ms)
-    heroIn: 180,                       // hero entrance starts this far into the cross-fade
+    fade: 260,                         // expanded frame fades to black (CSS .is-fade)
+    out: 160,                          // black panel drops to reveal the hero (CSS .is-out)
     buckets: 60, prodAt: 22, word1At: 46, word2At: 66, muxLine: 6,
     remFrom: 8, watchdog: 4500
   };
@@ -485,13 +485,16 @@
         pvBg.style.transform = 'translate3d(' + (-R.left).toFixed(1) + 'px,' + (-R.top).toFixed(1) + 'px,0) scale(' + (vw / R.width).toFixed(4) + ',' + (vh / R.height).toFixed(4) + ')';
         pvVid.style.transform = 'translate3d(' + (fx - R.left).toFixed(1) + 'px,' + (fy - R.top).toFixed(1) + 'px,0) scale(' + s.toFixed(4) + ')';
       });
-      // Cross-fade first, hero entrance ~half-way in, so the headline rises out of black instead of double-exposing the frame.
-      setTimeout(function () { pl.classList.add('is-fade'); setTimeout(hero, PL.heroIn); setTimeout(done, PL.fade); }, PL.expand);
+      // Frame fades to black first (panel stays opaque), then the black drops and the hero starts: never both at once.
+      setTimeout(function () {
+        pl.classList.add('is-fade');
+        setTimeout(function () { hero(); pl.classList.add('is-out'); setTimeout(done, PL.out); }, PL.fade);
+      }, PL.expand);
     }
 
     if (REDUCED) {
       complete(); W(elEl, '00:00:00');
-      setTimeout(function () { pl.classList.add('is-fade'); hero(); setTimeout(done, PL.fade); }, 300);
+      setTimeout(function () { pl.classList.add('is-out'); hero(); setTimeout(done, PL.out); }, 300);
       return;
     }
 
@@ -512,8 +515,11 @@
         var ni = Math.min(5, Math.floor(t / PL.nameStep));
         if (ni !== nameI) { nameI = ni; W(file, PL.names[ni]); }
         if (fin === null) {
-          p = PL.easeTo * (1 - Math.pow(1 - Math.min(t / PL.easeDur, 1), 3));
-          if ((ready && t >= PL.minT) || t >= PL.maxT || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
+          // Progress and the finish window run on the navigation clock, so a late-booting main.js
+          // doesn't replay the whole run on top of the wait; the filename gag and log stay on the local clock.
+          var tn = Math.max(now, t);
+          p = PL.easeTo * (1 - Math.pow(1 - Math.min(tn / PL.easeDur, 1), 3));
+          if ((((ready && tn >= PL.minT) || tn >= PL.maxT) && t >= 600) || (skip && t >= PL.skipAfter)) { fin = now; finFrom = p; }
         } else {
           var k = Math.min((now - fin) / PL.runDur, 1);
           p = finFrom + (100 - finFrom) * (1 - (1 - k) * (1 - k));
