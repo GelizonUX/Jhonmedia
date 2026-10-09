@@ -623,7 +623,7 @@ html.js .stats:not(.is-in) .stat::before { transform: scaleX(0); }
 .process .d1 { margin-bottom: var(--s-8); }
 .pr-row { display: flex; flex-direction: column; gap: var(--s-8); }
 .pr-panel { position: relative; border-left: var(--line); padding-left: var(--s-5); display: flex; flex-direction: column; gap: var(--s-4); }
-.pr-num { color: var(--c-ink-3); font-weight: var(--w-thin); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; font-size: clamp(4rem, 22vw, 10rem); }
+.pr-num { color: #fff; opacity: .16; transition: opacity 300ms var(--ease-snap); font-weight: var(--w-thin); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; font-size: clamp(4rem, 22vw, 10rem); }
 .pr-panel .h1 { margin-top: -.9em; position: relative; }
 .pr-panel p { max-width: 40ch; }
 
@@ -844,3 +844,51 @@ html.menu-open .nav { visibility: hidden; }
 /* Plain-text email (no links yet): match the link rows it replaced */
 .menu-foot span { min-height: 44px; display: flex; align-items: center; }
 .ft-cols > div > span { min-height: 32px; display: inline-flex; align-items: center; }
+
+/* ---------- Process v2: selected layer (docs/PROCESS-V2.md §7) ----------
+   One After Effects-style selection box glides between steps (scroll, hover, tap).
+   Box parts are placed by JS with integer translates; lines scale from a 100px base so they stay crisp. */
+.pr-wrap { position: relative; }
+.pr-panel.is-sel .pr-num { opacity: .5; }
+.pr-num { line-height: 1; }
+.pr-num .slot { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+.pr-num .strip { display: block; transform: translateY(0); }
+.pr-num .strip span { display: block; height: 1em; line-height: 1; }
+
+.pr-sel { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; z-index: 2; opacity: 0; transition: opacity 200ms linear; }
+.pr-sel.is-on { opacity: 1; }
+.pr-sel > i, .pr-sel > span { position: absolute; left: 0; top: 0; display: block; transform-origin: 0 0; }
+.sel-e { background: #fff; }
+.sel-et, .sel-eb { width: 100px; height: 1px; }
+.sel-el, .sel-er { width: 1px; height: 100px; }
+.sel-h { width: 7px; height: 7px; border: 1px solid #fff; background: var(--c-ink-0); opacity: 0; }
+.pr-sel.is-shown .sel-h, .pr-sel.is-shown .sel-a { opacity: 1; transition: opacity 160ms linear; }
+.sel-a { width: 11px; height: 11px; opacity: 0; }
+.sel-a::before, .sel-a::after { content: ""; position: absolute; background: #fff; }
+.sel-a::before { left: 5px; top: 0; width: 1px; height: 11px; }
+.sel-a::after { left: 0; top: 5px; width: 11px; height: 1px; }
+.sel-tag { display: inline-flex !important; gap: 8px; padding: 3px 6px; background: #fff; color: #000; white-space: nowrap; line-height: 1.2; opacity: 0; }
+.pr-sel.is-shown .sel-tag { opacity: 1; transition: opacity 160ms linear 200ms; }
+.sel-n { font-weight: var(--w-reg); }
+.sel-name { font-weight: var(--w-bold); }
+/* first draw-on */
+.pr-sel.is-draw .sel-e { transition: transform 420ms var(--ease-out); }
+/* glide */
+.pr-sel.is-live .sel-e, .pr-sel.is-live .sel-h[data-h="nw"], .pr-sel.is-live .sel-h[data-h="ne"],
+.pr-sel.is-live .sel-h[data-h="se"], .pr-sel.is-live .sel-h[data-h="sw"] { transition: transform 560ms var(--ease-out), opacity 160ms linear; }
+.pr-sel.is-live .sel-h[data-h="n"], .pr-sel.is-live .sel-h[data-h="e"], .pr-sel.is-live .sel-h[data-h="s"],
+.pr-sel.is-live .sel-h[data-h="w"], .pr-sel.is-live .sel-a { transition: transform 560ms var(--ease-out) 40ms, opacity 160ms linear; }
+.pr-sel.is-live .sel-tag { transition: transform 560ms var(--ease-out) 80ms, opacity 160ms linear; }
+
+/* Mobile/tablet: number in a left column next to the title (saves ~50px per step) */
+@media (max-width: 1023px) {
+  .pr-row { gap: var(--s-6); }
+  .pr-panel { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--s-4); row-gap: var(--s-3); align-items: start; }
+  .pr-panel .pr-num { grid-column: 1; grid-row: 1 / 5; align-self: start; font-size: clamp(2.5rem, 12vw, 3.5rem); }
+  .pr-panel > :not(.pr-num) { grid-column: 2; }
+  .pr-panel .h1 { margin-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pr-sel { display: none !important; }
+}
+.process.is-static .pr-sel { display: none; }
