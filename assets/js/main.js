@@ -810,7 +810,8 @@
       T(E.l, x, y, ' scaleY(' + (h / 100) + ')'); T(E.r, x + w, y, ' scaleY(' + (h / 100) + ')');
       var pts = { nw: [x, y], n: [cx, y], ne: [x + w, y], e: [x + w, cy], se: [x + w, y + h], s: [cx, y + h], sw: [x, y + h], w: [x, cy] };
       HORDER.forEach(function (k) { T(H[k], pts[k][0] - 3, pts[k][1] - 3); });
-      T(A, cx - 5, cy - 5); T(tag, x, y - 22);
+      // Anchor sits in the empty top-right corner of the box (beside the ghost number), never over copy
+      T(A, x + w - 22, y + 18); T(tag, x, y - 22);
     }
     function setTag(i) {
       var p = panels[i];

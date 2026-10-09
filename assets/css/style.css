@@ -892,3 +892,4 @@ html.menu-open .nav { visibility: hidden; }
   .pr-sel { display: none !important; }
 }
 .process.is-static .pr-sel { display: none; }
+@media (max-width: 1023px) { .sel-a { display: none !important; } }
