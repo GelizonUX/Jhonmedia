@@ -841,7 +841,7 @@ html.menu-open .nav { visibility: hidden; }
 .pr-num { grid-column: 1; grid-row: 1 / 5; font-size: var(--nfs); line-height: 1; color: #fff; opacity: .16; font-weight: var(--w-thin); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; transition: opacity 400ms var(--ease-out); }
 .pr-panel > h3, .pr-panel > p { grid-column: 2; }
 .pr-panel p { max-width: 40ch; }
-.pr-num .slot { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+.pr-num .slot { display: inline-block; height: 1em; overflow: hidden; overflow: clip; contain: paint; vertical-align: top; }
 .pr-num .strip { display: block; transform: translateY(0); }
 .pr-num .strip span { display: block; height: 1em; line-height: 1; }
 
@@ -873,6 +873,8 @@ html.menu-open .nav { visibility: hidden; }
 
 /* hidden-until-reached (JS only, animated mode) */
 html.js .process:not(.is-static) .pr-panel:not(.is-reached) .pr-num { opacity: 0; }
+/* nothing of an unreached step renders except its dim node (masked title slivers, ticks, strips) */
+html.js .process:not(.is-static) .pr-panel:not(.is-reached) > :not(.pr-node) { visibility: hidden; }
 html.js .process [data-reveal-manual] { transform: translate3d(0, 12px, 0); }
 html.js .process [data-reveal-manual].is-in { transform: none; transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
 
