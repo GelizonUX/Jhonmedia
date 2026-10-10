@@ -4,6 +4,16 @@ The site is static, so anything in the repo is public. That rules out putting a 
 
 You do **not** need the Cloud Console Credentials page for this.
 
+## Live deployment
+
+Deployed 2026-10-11 from jhonlloydvincent29@gmail.com (bookings land on that calendar).
+
+```
+BOOKING_API_URL = https://script.google.com/macros/s/AKfycbyRGxbLtwj8UO1yju8xzUI_bDyhp9J8WPPtgxTnlW1McsQ3qn8nwDiGwp8W5aVnrq9C/exec
+```
+
+Verified from an outside origin: `?action=ping`, `?action=slots` and POST validation all respond.
+
 ## 1. Create the script (5 minutes)
 
 1. Sign in to the Google account whose calendar should take bookings.
