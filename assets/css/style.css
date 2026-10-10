@@ -141,7 +141,7 @@ main, .footer { position: relative; z-index: 1; }
 
 /* ---------- Grain ---------- */
 .grain {
-  position: fixed; inset: -50%; z-index: 9000; pointer-events: none;
+  position: fixed; inset: -128px; z-index: 9000; /* offsets in @keyframes grain stay within ±128px */ pointer-events: none;
   opacity: var(--grain-o); mix-blend-mode: overlay;
   background-repeat: repeat; background-size: 256px 256px;
 }
@@ -619,13 +619,8 @@ html.js .stats:not(.is-in) .stat::before { transform: scaleX(0); }
   .svc:hover .plus { transform: rotate(45deg); }
 }
 
-/* ---------- Process ---------- */
-.process .d1 { margin-bottom: var(--s-8); }
-.pr-row { display: flex; flex-direction: column; gap: var(--s-8); }
-.pr-panel { position: relative; border-left: var(--line); padding-left: var(--s-5); display: flex; flex-direction: column; gap: var(--s-4); }
-.pr-num { color: var(--c-ink-3); font-weight: var(--w-thin); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; font-size: clamp(4rem, 22vw, 10rem); }
-.pr-panel .h1 { margin-top: -.9em; position: relative; }
-.pr-panel p { max-width: 40ch; }
+
+/* ---------- Process: see Process v4 at the end of this file ---------- */
 
 /* ---------- Brands ---------- */
 .brands { padding: var(--s-9) 0; position: relative; }
@@ -810,24 +805,13 @@ html.menu-open .nav { visibility: hidden; }
   .filters-wrap { margin-bottom: var(--s-6); }
   .work-more { margin-top: var(--s-7); }
   .stats { gap: var(--s-6) var(--gap); }
-  .pr-row { gap: var(--s-7); }
-  .pr-num { font-size: clamp(3rem, 16vw, 5rem); }
   .svc-desc { grid-column: 2 / -1; }
   .ft-cols { grid-template-columns: 1fr 1fr; gap: var(--s-6) var(--gap); }
   .ft-cols a, .work-more a, .nav-mark { min-height: 44px; display: inline-flex; align-items: center; }
   .ft-legal { margin-top: var(--s-7); }
   .footer { padding-top: var(--s-8); }
 }
-/* Process: static row on desktop (no pin). 3 columns at 1024–1279 so step text fits, 5 from 1280. */
-@media (min-width: 1024px) {
-  .process .pr-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-8) var(--gap); }
-  .process .pr-num { font-size: clamp(4rem, 8vw, 9rem); }
-}
-@media (min-width: 1280px) { .process .pr-row { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-@media (min-width: 1280px) { .process .pr-panel .h1 { font-size: clamp(1.5rem, 2vw, 2.25rem); } .process .pr-panel { padding-left: var(--s-4); } }
 
-/* Process titles: reserve two lines so every step's body starts at the same height */
-@media (min-width: 1024px) { .process .pr-panel .h1 { min-height: 2.2em; min-height: 2lh; } }
 /* Scroll cue collides with the bottom-left viewfinder bracket; the page already leads into Work */
 @media (min-width: 768px) { .scroll-cue { display: none; } }
 
@@ -844,3 +828,85 @@ html.menu-open .nav { visibility: hidden; }
 /* Plain-text email (no links yet): match the link rows it replaced */
 .menu-foot span { min-height: 44px; display: flex; align-items: center; }
 .ft-cols > div > span { min-height: 32px; display: inline-flex; align-items: center; }
+
+
+/* ---------- Process v4: connector flow ----------
+   Mobile: v3 spine on the left gutter, cards right. Desktop: static row grid + horizontal connector track (below).
+   The white spine is a scaleY over a gray track, scrubbed by scroll. Crossing a node reveals that step once. */
+.process { --G: 32px; --nfs: clamp(2.5rem, 12vw, 3.5rem); --ny: calc(var(--nfs) * .5 - 5.5px); }
+.pr-wrap { position: relative; }
+.pr-row { position: relative; display: flex; flex-direction: column; gap: var(--s-6); }
+.pr-panel { position: relative; margin-left: var(--G); display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--s-4); row-gap: var(--s-3); align-items: start; }
+.pr-num { grid-column: 1; grid-row: 1 / 5; font-size: var(--nfs); line-height: 1; color: #fff; opacity: .16; font-weight: var(--w-thin); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; transition: opacity 400ms var(--ease-out); }
+.pr-panel > h3, .pr-panel > p { grid-column: 2; }
+.pr-panel p { max-width: 40ch; }
+.pr-num .slot { display: inline-block; height: 1em; overflow: hidden; overflow: clip; contain: paint; vertical-align: top; }
+.pr-num .strip { display: block; transform: translateY(0); }
+.pr-num .strip span { display: block; height: 1em; line-height: 1; }
+
+/* spine */
+.pr-spine { position: absolute; top: calc(var(--ny) + 5.5px); bottom: 0; left: 0; width: 1px; pointer-events: none; }
+.pr-track, .pr-fill { position: absolute; inset: 0; display: block; }
+.pr-track { background: var(--c-ink-3); }
+.pr-fill { background: #fff; transform-origin: 50% 0; }
+.pr-tip { position: absolute; left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px 2px rgba(255,255,255,.45); display: block; }
+
+/* node + branch (positioned from the panel; spine x = panel left − G on mobile) */
+.pr-node { position: absolute; z-index: 1; top: var(--ny); left: calc(var(--G) * -1 - 5.5px); width: 11px; height: 11px; border-radius: 50%;
+  border: 1px solid var(--c-ink-3); background: var(--c-ink-0); transform: scale(.6); transition: transform 500ms var(--ease-out), border-color 200ms linear; }
+.pr-node::before { content: ""; position: absolute; inset: 1px; border-radius: 50%; background: #fff; transform: scale(0); transition: transform 300ms var(--ease-out) 120ms; }
+.pr-ring { position: absolute; inset: -1px; border-radius: 50%; border: 1px solid #fff; opacity: 0; display: block; }
+.pr-branch { position: absolute; top: calc(var(--ny) + 5px); left: calc(var(--G) * -1); width: var(--G); height: 1px; }
+.pr-branch i { position: absolute; inset: 0; display: block; background: #fff; transform-origin: 0 50%; transform: scaleX(0); transition: transform 300ms var(--ease-out) 160ms; }
+.pr-branch::after { content: ""; position: absolute; right: -2px; top: -2px; width: 5px; height: 5px; background: #fff; opacity: 0; transition: opacity 80ms linear 440ms; }
+
+.pr-panel.is-reached .pr-node { transform: none; border-color: #fff; }
+.pr-panel.is-reached .pr-node::before { transform: none; }
+.pr-panel.is-reached .pr-ring { animation: pr-pulse 520ms var(--ease-out) 1; }
+.pr-panel.is-active .pr-ring { animation: pr-pulse 520ms var(--ease-out) 1, pr-breathe 2.6s var(--ease-in-out) 700ms infinite; }
+.pr-panel.is-reached .pr-branch i { transform: none; }
+.pr-panel.is-reached .pr-branch::after { opacity: 1; }
+.pr-panel.is-active .pr-num { opacity: .32; }
+@keyframes pr-pulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(2.8); opacity: 0; } }
+@keyframes pr-breathe { 0%, 100% { transform: scale(1); opacity: 0; } 50% { transform: scale(2); opacity: .28; } }
+
+/* hidden-until-reached (JS only, animated mode) */
+html.js .process:not(.is-static) .pr-panel:not(.is-rolling) .pr-num { opacity: 0; transition: none; }
+/* nothing of an unreached step renders except its dim node (masked title slivers, ticks, strips) */
+html.js .process:not(.is-static) .pr-panel:not(.is-reached) > :not(.pr-node):not(.pr-vline) { visibility: hidden; }
+html.js .process:not(.is-static) .pr-panel:not(.is-titled) > h3 { visibility: hidden; }
+html.js .process [data-reveal-manual] { transform: translate3d(0, 12px, 0); }
+html.js .process [data-reveal-manual].is-in { transform: none; transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
+
+/* Desktop (v4): the static row/grid (3 + 2 at 1024–1279, 5 from 1280) with a horizontal connector track
+   across the top of each row. Nodes sit where each column hairline meets the track; the hairline then
+   draws down into the card. */
+.pr-vline, .pr-htrack { display: none; }
+@media (min-width: 1024px) {
+  .process { --nfs: clamp(4rem, 8vw, 9rem); }
+  .pr-spine, .pr-branch { display: none; }
+  .pr-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-8) var(--gap); }
+  .pr-panel { margin-left: 0; display: flex; flex-direction: column; gap: var(--s-4); padding: var(--s-6) 0 0 var(--s-5); }
+  .pr-num { display: block; }
+  .pr-panel .h1 { margin-top: -.9em; position: relative; min-height: 2.2em; min-height: 2lh; }
+  .pr-node { top: -5px; left: -5px; } /* centred on the 1px track and hairline */
+  .pr-vline { display: block; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.08); }
+  .pr-vline i { position: absolute; inset: 0; display: block; background: rgba(255,255,255,.34); transform-origin: 50% 0; transform: scaleY(0); transition: transform 400ms var(--ease-out) 120ms; }
+  .pr-panel.is-reached .pr-vline i { transform: none; }
+  .pr-htrack.is-on { display: block; position: absolute; left: 0; top: 0; height: 1px; pointer-events: none; }
+  .pr-htrack > i { position: absolute; display: block; }
+  .pr-htrack .hb { inset: 0; background: var(--c-ink-3); }
+  .pr-htrack .hf { inset: 0; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+  .pr-htrack .ht { left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px 2px rgba(255,255,255,.45); opacity: 0; }
+}
+@media (min-width: 1280px) {
+  .pr-row { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .pr-panel { padding-left: var(--s-4); }
+  .pr-panel .h1 { font-size: clamp(1.5rem, 2vw, 2.25rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-node, .pr-node::before, .pr-branch i, .pr-branch::after, .pr-vline i, .pr-num { transition: none !important; }
+  .pr-ring { animation: none !important; }
+}
+.process.is-static .pr-tip, .process.is-static .ht { display: none; }

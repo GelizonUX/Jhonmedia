@@ -699,8 +699,8 @@ Listen for changes to both and degrade live.
 ### 4.6 Scroll-linked timeline (signature)
 See 3.5. Plus: as the playhead crosses each clip boundary, a 1-frame "cut" flash: the viewer timecode briefly switches to bold for 80ms. Tiny, but it's the detail.
 
-### 4.7 Horizontal scroll (Process)
-See 3.7. Pinned with `position: sticky`, translateX driven by `smoothY`. Container height computed in JS: `panelsTotalWidth - viewportWidth + viewportHeight`.
+### 4.7 Process (replaced)
+Process v4 (current): the static row grid (3 + 2 at 1024–1279, 5 from 1280) with a horizontal connector track per row, scrubbed by scroll. When the tip reaches a column's node the node pops, the column hairline draws down and the step reveals once (single-step number roll, masked title, body/label rise). Mobile keeps the v3 left-gutter spine. Not pinned.
 
 ### 4.8 Marquees
 - One reusable component `[data-marquee]` with `data-speed` and `data-direction`.
