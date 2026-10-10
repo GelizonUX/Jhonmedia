@@ -9,6 +9,9 @@ index.html
 assets/css/style.css
 assets/js/work.js     <- the only file you edit to update the work grid
 assets/js/main.js     <- interactions
+assets/js/booking.js  <- live booking section (#book)
+assets/css/booking.css
+booking/              <- Google Calendar backend (Apps Script) + SETUP.md
 assets/thumbs/        <- 01.jpg ... 09.jpg (9:16 thumbnails)
 assets/img/og.jpg     <- social share image (placeholder)
 assets/favicon.svg
@@ -37,6 +40,17 @@ Everything lives in `assets/js/work.js`. The header comment in that file walks t
 5. **Click behavior.** `WORK_CONFIG.mode = "newtab"` (default) opens TikTok in a new tab. `"lightbox"` plays the TikTok embed on the page (needs full `/video/123...` links, not `vm.tiktok.com` short links).
 
 Other placeholders (stats, testimonials, prices, brand names, booking link, social URLs, timezone) are marked with `placeholder — replace` HTML comments in `index.html`. The clock timezone is `CONFIG.timeZone` at the top of `assets/js/main.js`.
+
+## Booking
+
+The `#book` section is a live booking calendar. Visitors pick a day, then a time, then add their details. The backend is a Google Apps Script web app on Jhon's Google Calendar. It creates the event, the Google Meet link, the invite and a confirmation email. Setup and the API contract are in `booking/SETUP.md`.
+
+- **Settings** live in `BOOKING_CONFIG` at the top of `assets/js/booking.js`: `apiUrl` (the Apps Script `/exec` URL), `refreshSeconds` (60), `laneDays` (21) and the fallback `email`.
+- **Hours, call length, buffers, daily cap** are set in `CONFIG` in `booking/apps-script/Code.gs`, then redeployed. The site picks them up on its own.
+- **Always current.** Times load when the section comes near the screen, refresh every 60 seconds while it is visible, refresh when the tab comes back, and refresh again right before the Book it button shows. Taken times stay visible as BOOKED.
+- **Time zones.** Times show in the visitor's own time zone, grouped by their local date, with a Manila time line for the picked slot.
+- **If the API is down** the header says `OFFLINE · RETRYING`, it retries with backoff, and the visitor is pointed to the email.
+- **Testing without booking for real:** see `docs/booking-screens/` for every state. The API can be mocked with Playwright `page.route`.
 
 ## Deploy
 

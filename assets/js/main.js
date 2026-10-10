@@ -9,7 +9,7 @@
   var CONFIG = {
     timeZone: 'Asia/Manila', // placeholder — replace (IANA time zone for the nav + footer clock)
     tzLabel: 'PHT',          // placeholder — replace
-    email: 'hello@jhonmedia.com'
+    email: 'jhonlloydvincent29@gmail.com'
   };
 
   var doc = document, root = doc.documentElement, win = window;

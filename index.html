@@ -14,6 +14,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/anatomy.css">
+<link rel="stylesheet" href="assets/css/booking.css">
 <script>
   /* Progressive enhancement flag. If main.js never boots (blocked, offline, error),
      the safety timer removes the flag so nothing stays hidden. */
@@ -84,7 +85,7 @@
     <a href="#services" data-roll data-cursor="link" data-nav="services">Services</a>
     <a href="#process" data-roll data-cursor="link" data-nav="process">Process</a>
     <a href="#faq" data-roll data-cursor="link" data-nav="faq">FAQ</a>
-    <a class="nav-cta" href="#contact" data-roll data-magnetic data-cursor="link">Book a call</a>
+    <a class="nav-cta" href="#book" data-roll data-magnetic data-cursor="link">Book a call</a>
   </nav>
   <button class="nav-menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-cursor="link">Menu</button>
 </header>
@@ -99,10 +100,10 @@
     <a href="#services"><span class="mline"><span>Services</span></span></a>
     <a href="#process"><span class="mline"><span>Process</span></span></a>
     <a href="#faq"><span class="mline"><span>FAQ</span></span></a>
-    <a href="#contact"><span class="mline"><span>Book a call</span></span></a>
+    <a href="#book"><span class="mline"><span>Book a call</span></span></a>
   </nav>
   <div class="menu-foot">
-    <span>hello@jhonmedia.com</span>
+    <span>jhonlloydvincent29@gmail.com</span>
   </div>
 </div>
 
@@ -127,7 +128,7 @@
     <p class="hero-intro hero-fade">Performance ads for DTC brands. UGC, product demos and talking heads, cut for TikTok, Reels and Meta.</p>
     <div class="hero-ctas hero-fade">
       <a class="btn btn-primary" href="#work" data-magnetic data-cursor="link"><span class="btn-in" data-roll>See the work</span></a>
-      <a class="btn btn-outline" href="#contact" data-magnetic data-cursor="link"><span class="btn-in" data-roll>Book a call</span></a>
+      <a class="btn btn-outline" href="#book" data-magnetic data-cursor="link"><span class="btn-in" data-roll>Book a call</span></a>
     </div>
   </div>
 
@@ -442,11 +443,135 @@
   <p class="label contact-rec"><i class="rec-dot"></i> REC&nbsp;&nbsp;NEXT AD STARTS HERE</p>
   <h2 class="mega contact-title" id="contact-title" data-split data-parallax>GOT <span class="thin">footage?</span><br><span class="thin">Let's</span> CUT IT.</h2>
   <p class="h2 contact-sub" data-reveal>Send me the product, the offer and what's running now. I'll reply within 24 hours with how I'd approach it.</p>
+  <div class="contact-ctas">
+    <a class="btn btn-dark" href="#book" data-magnetic data-cursor="link"><span class="btn-in" data-roll>Book a 30-min call</span></a>
+  </div>
   <div class="contact-mail">
-    <span class="d2" id="contact-email">hello@jhonmedia.com</span>
+    <span class="d2" id="contact-email">jhonlloydvincent29@gmail.com</span>
     <button type="button" class="copy-btn label" id="copy-btn" data-cursor="link">Copy</button>
   </div>
   <p class="small contact-resp">Usually replies in under 24 hours. Based in the Philippines, works with US, UK and AU brands.<!-- placeholder — replace --></p>
+</section>
+
+<!-- [09] BOOK (assets/js/booking.js fills the lane and grid from the live calendar) -->
+<section class="section book" id="book" aria-labelledby="book-title">
+  <div class="slabel label" aria-hidden="true"><span>[09]</span><span class="slabel-name">BOOK</span><span class="slabel-tc" data-in="00:02:18:00" data-out="00:02:30:00">TC 00:02:18:00 → 00:02:30:00</span></div>
+  <div class="bkg-head">
+    <h2 class="d1" id="book-title" data-split>BOOK <span class="thin">a</span> CALL.</h2>
+    <p class="bkg-live label" id="bkg-live"><i class="rec-dot" aria-hidden="true"></i> <span id="bkg-sync">CONNECTING</span></p>
+  </div>
+  <p class="bkg-sub muted" data-reveal>30 minutes on Google Meet. Pick a day, pick a time. The invite lands in your inbox.</p>
+
+  <div class="bkg" id="bkg">
+    <ol class="bkg-steps label" id="bkg-steps" aria-label="Booking steps">
+      <li data-s="1" aria-current="step"><b>01</b> DAY</li>
+      <li data-s="2"><b>02</b> TIME</li>
+      <li data-s="3"><b>03</b> DETAILS</li>
+      <li data-s="4"><b>04</b> BOOKED</li>
+    </ol>
+    <p class="sr-only" id="bkg-announce" aria-live="polite"></p>
+    <p class="bkg-msg label" id="bkg-msg" aria-live="assertive"></p>
+
+    <!-- Steps 1 + 2: day lane and time grid -->
+    <div class="bkg-panel" id="bkg-pick" data-panel="pick">
+      <div class="bkg-lanewrap">
+        <span class="bkg-tl micro" aria-hidden="true">V1</span>
+        <div class="bkg-scroll" id="bkg-scroll">
+          <div class="bkg-track" id="bkg-track" role="group" aria-label="Pick a day. Use the arrow keys to move.">
+            <div class="bkg-ruler" aria-hidden="true"></div>
+            <div class="bkg-clips" id="bkg-days"></div>
+            <i class="bkg-ph" id="bkg-ph" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+      <p class="bkg-err small" id="bkg-loaderr" hidden></p>
+
+      <div class="bkg-times" id="bkg-times" hidden>
+        <div class="bkg-times-main">
+          <div class="bkg-times-head">
+            <h3 class="h1" id="bkg-dayname" tabindex="-1"></h3>
+            <p class="label muted" id="bkg-zone"></p>
+          </div>
+          <div class="bkg-grid" id="bkg-grid" role="group" aria-labelledby="bkg-dayname"></div>
+        </div>
+        <div class="bkg-mon" id="bkg-mon">
+          <p class="bkg-io"><span class="label muted">IN</span> <span class="bkg-tc" id="bkg-in">00:00</span></p>
+          <p class="bkg-io"><span class="label muted">OUT</span> <span class="bkg-tc" id="bkg-out">00:00</span></p>
+          <p class="label muted bkg-mnl" id="bkg-mnl">Pick a time.</p>
+          <button type="button" class="btn btn-primary bkg-next" id="bkg-next" data-cursor="link" hidden><span class="btn-in">Continue</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: details -->
+    <div class="bkg-panel" id="bkg-details" data-panel="details" hidden>
+      <div class="bkg-card" id="bkg-card">
+        <div class="bkg-card-top label"><span><i class="bkg-lock" aria-hidden="true"></i> LOCKED</span><button type="button" class="bkg-change label" id="bkg-change" data-cursor="link">Change</button></div>
+        <p class="h2 bkg-card-when" id="bkg-card-when"></p>
+        <p class="label bkg-card-meta">30 MIN · GOOGLE MEET</p>
+        <p class="label muted" id="bkg-card-mnl"></p>
+      </div>
+      <form class="bkg-form" id="bkg-form" novalidate>
+        <div class="bkg-field">
+          <label for="bkg-name" class="label">Name <span class="muted">Required</span></label>
+          <input id="bkg-name" name="name" type="text" autocomplete="name" maxlength="80" required aria-describedby="bkg-name-err">
+          <p class="bkg-ferr small" id="bkg-name-err"></p>
+        </div>
+        <div class="bkg-field">
+          <label for="bkg-email" class="label">Email <span class="muted">Required</span></label>
+          <input id="bkg-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required aria-describedby="bkg-email-hint bkg-email-err">
+          <p class="small muted" id="bkg-email-hint">Your invite and Meet link go here.</p>
+          <p class="bkg-ferr small" id="bkg-email-err"></p>
+        </div>
+        <div class="bkg-field">
+          <label for="bkg-brand" class="label">Brand</label>
+          <input id="bkg-brand" name="brand" type="text" autocomplete="organization" maxlength="120">
+        </div>
+        <div class="bkg-field">
+          <label for="bkg-link" class="label">Product or site link</label>
+          <input id="bkg-link" name="link" type="url" inputmode="url" autocomplete="url" maxlength="300" placeholder="https://">
+        </div>
+        <div class="bkg-field">
+          <label for="bkg-budget" class="label">Monthly ad spend</label>
+          <select id="bkg-budget" name="budget">
+            <option value="">Pick one</option>
+            <option>Under $5k</option>
+            <option>$5k-$20k</option>
+            <option>$20k-$50k</option>
+            <option>$50k+</option>
+          </select>
+        </div>
+        <div class="bkg-field bkg-wide">
+          <label for="bkg-notes" class="label">Notes</label>
+          <textarea id="bkg-notes" name="notes" rows="4" maxlength="2000" aria-describedby="bkg-notes-hint"></textarea>
+          <p class="small muted" id="bkg-notes-hint">What are you running now and what number do you want to move?</p>
+        </div>
+        <div class="bkg-hp" aria-hidden="true"><label for="bkg-website">Website</label><input id="bkg-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <div class="bkg-submit bkg-wide">
+          <p class="label muted" id="bkg-check">Checking the time is still free.</p>
+          <button type="submit" class="btn btn-primary bkg-go" id="bkg-go" data-magnetic data-cursor="link" hidden><span class="btn-in" data-roll>Book it</span></button>
+          <div class="bkg-exp" id="bkg-exp" hidden aria-hidden="true">
+            <div class="bkg-exp-row label"><span>EXPORTING BOOKING</span><span id="bkg-exp-pct">000%</span></div>
+            <div class="bkg-exp-bar"><i id="bkg-exp-fill"></i></div>
+          </div>
+          <p class="bkg-err small" id="bkg-err" role="alert"></p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 4: booked -->
+    <div class="bkg-panel bkg-done" id="bkg-done" data-panel="done" hidden>
+      <p class="label bkg-done-rec"><i class="rec-dot" aria-hidden="true"></i> REC</p>
+      <h3 class="d1" id="bkg-done-title" tabindex="-1">BOOKED.</h3>
+      <p class="h2" id="bkg-done-name"></p>
+      <p class="h2 muted" id="bkg-done-when"></p>
+      <div class="bkg-meet" id="bkg-meet">
+        <a class="btn btn-primary bkg-meet-btn" id="bkg-meet-link" href="#" target="_blank" rel="noopener" data-magnetic data-cursor="link"><span class="btn-in">Open Google Meet ↗<span class="sr-only"> (opens in a new tab)</span></span></a>
+        <button type="button" class="btn btn-outline" id="bkg-meet-copy" data-cursor="link"><span class="btn-in">Copy link</span></button>
+      </div>
+      <p class="small muted" id="bkg-done-note">The invite and Meet link are in your inbox. Add it to your calendar from there.</p>
+    </div>
+  </div>
 </section>
 
 </main>
@@ -454,7 +579,7 @@
 <!-- FOOTER -->
 <footer class="footer" id="footer">
   <div class="ft-cols">
-    <div><p class="label muted">CONTACT</p><span>hello@jhonmedia.com</span><a class="ulink" href="#contact">Book a call</a></div>
+    <div><p class="label muted">CONTACT</p><span>jhonlloydvincent29@gmail.com</span><a class="ulink" href="#book">Book a call</a></div>
     <div><p class="label muted">SITE</p><a class="ulink" href="#work">Work</a><a class="ulink" href="#services">Services</a><a class="ulink" href="#process">Process</a><a class="ulink" href="#faq">FAQ</a></div>
     <div><p class="label muted">LOCAL TIME</p><p class="ft-clock" aria-hidden="true"><span data-clock="footer">14:32</span> PHT<!-- placeholder timezone — replace --></p></div>
   </div>
@@ -483,5 +608,6 @@
 <script src="assets/js/work.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/anatomy.js"></script>
+<script src="assets/js/booking.js"></script>
 </body>
 </html>
