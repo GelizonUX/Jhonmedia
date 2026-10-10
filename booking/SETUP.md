@@ -45,8 +45,16 @@ After any code change: Deploy > Manage deployments > pencil > Version: **New ver
 
 ```json
 { "ok": true, "timeZone": "Asia/Manila", "slotMinutes": 30,
-  "days": [ { "date": "2026-10-12", "weekday": 1, "slots": ["2026-10-12T01:00:00.000Z", "..."] } ] }
+  "days": [ { "date": "2026-10-12", "weekday": 1, "full": false,
+              "slots": ["2026-10-12T01:00:00.000Z", "..."],
+              "busy":  ["2026-10-12T02:00:00.000Z", "..."] } ] }
 ```
+
+- `slots`: bookable right now.
+- `busy`: inside working hours but already taken (another client, or anything else on the calendar). Show these as unavailable. The API never says why.
+- `full`: the day hit the daily cap of discovery calls. Every time that day is in `busy`.
+- `slots` + `busy` together = the full working grid for that day, so the UI can draw every time in order.
+- Data is live from Google Calendar on every request. Re-fetch to stay current.
 
 Slots are UTC ISO strings. Render them in the visitor's own time zone (`Intl.DateTimeFormat().resolvedOptions().timeZone`). `date` is the day in Manila time, so group by the visitor's local date when displaying.
 

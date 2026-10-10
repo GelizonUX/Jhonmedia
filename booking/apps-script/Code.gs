@@ -123,20 +123,20 @@ function computeSlots_(now, blocks, perDay) {
     if (out.length && out[out.length - 1].date === key) continue;
     var weekday = Number(Utilities.formatDate(dayDate, CONFIG.timeZone, 'u')) % 7; // u: 1=Mon..7=Sun
     var windows = CONFIG.hours[weekday] || [];
-    var times = [];
-    var taken = perDay[key] || 0;
-    if (taken < CONFIG.maxPerDay) {
-      for (var w = 0; w < windows.length; w++) {
-        var ws = localToDate_(key, windows[w][0]).getTime();
-        var we = localToDate_(key, windows[w][1]).getTime();
-        for (var t = ws; t + slotMs <= we; t += stepMs) {
-          if (t < earliest) continue;
-          if (overlaps_(t - bufMs, t + slotMs + bufMs, blocks)) continue;
-          times.push(new Date(t).toISOString());
-        }
+    var times = [], busyTimes = [];
+    var full = (perDay[key] || 0) >= CONFIG.maxPerDay;
+    for (var w = 0; w < windows.length; w++) {
+      var ws = localToDate_(key, windows[w][0]).getTime();
+      var we = localToDate_(key, windows[w][1]).getTime();
+      for (var t = ws; t + slotMs <= we; t += stepMs) {
+        if (t < earliest) continue;
+        var iso = new Date(t).toISOString();
+        if (full || overlaps_(t - bufMs, t + slotMs + bufMs, blocks)) busyTimes.push(iso);
+        else times.push(iso);
       }
     }
-    out.push({ date: key, weekday: weekday, slots: times });
+    // slots = bookable. busy = inside working hours but already taken (shown as unavailable, never why).
+    out.push({ date: key, weekday: weekday, slots: times, busy: busyTimes, full: full });
   }
   return out;
 }
