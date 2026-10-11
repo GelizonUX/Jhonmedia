@@ -2,8 +2,6 @@
    JHON MEDIA · booking.css
    Live booking section (#book). Tokens from style.css.
    ============================================================ */
-.book { --clip: 104px; --cgap: 4px; }
-@media (min-width: 1024px) { .book { --clip: 120px; } }
 
 .bkg-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--s-4) var(--s-6); }
 .bkg-head .d1 { min-width: 0; }
@@ -36,67 +34,30 @@
 html.js .bkg-panel:not([hidden]) { animation: bkg-in var(--d-2) linear; }
 @keyframes bkg-in { from { opacity: 0; } to { opacity: 1; } }
 
-/* ---------- Step 1: day lane ---------- */
-.bkg-lanewrap { position: relative; margin: 0 calc(var(--gutter) * -1); }
-.bkg-tl { display: none; }
-.bkg-scroll {
-  overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter);
-  padding: 0 var(--gutter) var(--s-4); scrollbar-width: thin; scrollbar-color: var(--c-ink-3) transparent;
-}
-.bkg-scroll::-webkit-scrollbar { height: 4px; }
-.bkg-scroll::-webkit-scrollbar-thumb { background: var(--c-ink-3); }
-.bkg-track { position: relative; width: max-content; padding-top: 22px; }
-.bkg-ruler {
-  position: absolute; left: 0; right: 0; top: 0; height: 14px; border-bottom: 1px solid var(--c-ink-3);
-  background: repeating-linear-gradient(90deg, var(--c-ink-3) 0 1px, transparent 1px calc((var(--clip) + var(--cgap)) / 4)) 0 100% / 100% 5px no-repeat,
-              repeating-linear-gradient(90deg, var(--c-mute) 0 1px, transparent 1px calc(var(--clip) + var(--cgap))) 0 100% / 100% 10px no-repeat;
-}
-.bkg-clips { position: relative; z-index: 3; display: flex; gap: var(--cgap); }
-@media (min-width: 1024px) {
-  .bkg-lanewrap { display: flex; align-items: stretch; }
-  .bkg-tl { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: var(--gutter); padding-top: 22px; color: var(--c-mute); }
-  .bkg-scroll { flex: 1; min-width: 0; padding-left: 0; scroll-padding-inline: 0; }
-}
-
+/* ---------- Step 1: calendar ---------- */
+.bkg-cal { max-width: 560px; }
+.bkg-cal-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); padding-bottom: var(--s-3); border-bottom: 1px solid var(--c-ink-3); }
+.bkg-key { display: flex; align-items: center; gap: 6px; }
+.bkg-key i { width: 5px; height: 5px; border-radius: 50%; background: var(--c-ink-3); margin-left: 8px; }
+.bkg-key i.o { background: var(--c-white); margin-left: 0; }
+.bkg-wk, .bkg-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.bkg-wk { padding: var(--s-3) 0 var(--s-2); text-align: center; }
 .bkg-day {
-  position: relative; flex: 0 0 var(--clip); width: var(--clip); min-height: 112px; padding: 10px;
-  display: flex; flex-direction: column; align-items: flex-start; text-align: left;
-  border: 1px solid var(--c-ink-3); background: var(--c-ink-1); scroll-snap-align: start;
-  font-variant-numeric: tabular-nums;
+  position: relative; aspect-ratio: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 1px solid transparent; color: var(--c-ink-3); font-variant-numeric: tabular-nums; cursor: default;
   transition: background-color var(--d-1) var(--ease-snap), color var(--d-1) var(--ease-snap), border-color var(--d-1) var(--ease-snap);
 }
-.bkg-wd { font-size: var(--t-label); letter-spacing: .12em; font-weight: var(--w-bold); }
-.bkg-dt { margin-top: 2px; font-size: 1.125rem; letter-spacing: -0.01em; font-weight: var(--w-bold); white-space: nowrap; }
-.bkg-bars { display: flex; gap: 2px; width: 100%; height: 6px; margin-top: auto; }
-.bkg-bars i { flex: 1; min-width: 1px; background: var(--c-ink-3); }
-.bkg-bars i.o { background: rgba(255, 255, 255, .8); }
-.bkg-st { margin-top: 8px; font-size: var(--t-micro); letter-spacing: .1em; line-height: 1.2; text-transform: uppercase; color: var(--c-mute); white-space: nowrap; }
-.bkg-day.is-open .bkg-st { color: var(--c-white); }
+.bkg-n { font-size: clamp(1rem, 2.4vw, 1.375rem); font-weight: var(--w-reg); line-height: 1; }
+.bkg-mo { position: absolute; top: 5px; left: 0; right: 0; font-size: 9px; letter-spacing: .12em; color: var(--c-mute); }
+.bkg-day.is-open { color: var(--c-white); cursor: pointer; }
+.bkg-day.is-open .bkg-n { font-weight: var(--w-bold); }
+.bkg-day.is-open::after { content: ""; position: absolute; bottom: 18%; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
 .bkg-day.is-open:hover { border-color: var(--c-white); }
-.bkg-day.is-full {
-  background: repeating-linear-gradient(135deg, #2a2a2a 0 2px, #161616 2px 9px);
-  color: var(--c-mute); cursor: not-allowed;
-}
-.bkg-day.is-full .bkg-st { color: var(--c-white); }
-.bkg-day.is-off { background: transparent; border-color: var(--c-ink-2); color: var(--c-mute); cursor: default; }
-.bkg-day.is-load .bkg-bars { background: var(--c-ink-2); }
-.bkg-day.is-load .bkg-st { color: var(--c-ink-3); }
-html.js .bkg-day.is-load .bkg-bars { animation: bkg-pulse 1.2s steps(2, jump-none) infinite; }
+.bkg-day.is-full .bkg-n { text-decoration: line-through; text-decoration-thickness: 1px; }
+html.js .bkg-day.is-load { animation: bkg-pulse 1.2s steps(2, jump-none) infinite; }
 @keyframes bkg-pulse { from { opacity: 1; } to { opacity: .3; } }
 .bkg-day.is-sel { background: var(--c-white); color: var(--c-black); border-color: var(--c-white); }
-.bkg-day.is-sel .bkg-st { color: var(--c-black); }
-.bkg-day.is-sel .bkg-bars i { background: #b8b8b8; }
-.bkg-day.is-sel .bkg-bars i.o { background: var(--c-black); }
-
-/* Playhead */
-.bkg-ph {
-  position: absolute; left: -.5px; top: 0; bottom: -10px; width: 1px; background: var(--c-white); z-index: 2; pointer-events: none;
-  transition: transform var(--d-3) var(--ease-out), opacity var(--d-2) linear;
-}
-.bkg-ph::before { content: ""; position: absolute; left: -4px; top: 0; width: 9px; height: 10px; background: var(--c-white); clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%); }
-.bkg-ph.is-idle { opacity: 0; }
-.bkg-ph.no-anim { transition: none; }
+.bkg-day.is-sel .bkg-mo { color: var(--c-black); }
 
 /* ---------- Step 2: time grid ---------- */
 .bkg-times { margin-top: var(--s-7); display: grid; gap: var(--s-6); }
@@ -208,9 +169,21 @@ html.js .bkg-day.is-load .bkg-bars { animation: bkg-pulse 1.2s steps(2, jump-non
 
 /* ---------- Reduced motion: instant everything ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .bkg-ph, .bkg-day, .bkg-time, .bkg-exp-bar i { transition: none !important; }
-  html.js .bkg-panel:not([hidden]), .bkg-time.is-flip, html.js .bkg-day.is-load .bkg-bars, #bkg-check::before { animation: none !important; }
+  .bkg-day, .bkg-time, .bkg-exp-bar i { transition: none !important; }
+  html.js .bkg-panel:not([hidden]), .bkg-time.is-flip, html.js .bkg-day.is-load, #bkg-check::before { animation: none !important; }
 }
 
 .bkg-fallback { margin-bottom: var(--s-5); color: var(--c-mute); }
 .bkg-fallback[hidden] { display: none; }
+
+/* Desktop: calendar left, times right */
+.bkg-hint { display: none; }
+@media (min-width: 1024px) {
+  #bkg-pick { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: calc(var(--gap) * 3); align-items: start; }
+  #bkg-pick > .bkg-err { grid-column: 1 / -1; }
+  .bkg-cal { max-width: none; }
+  .bkg-times { margin-top: 0; grid-template-columns: minmax(0, 1fr); }
+  .bkg-times-main, .bkg-mon { grid-column: auto; margin-top: 0; }
+  .bkg-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bkg-times[hidden] + .bkg-hint { display: flex; width: 100%; align-items: center; justify-content: center; align-self: stretch; min-height: 240px; border: 1px dashed var(--c-ink-3); text-align: center; }
+}

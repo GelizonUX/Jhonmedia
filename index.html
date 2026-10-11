@@ -474,15 +474,13 @@
 
     <!-- Steps 1 + 2: day lane and time grid -->
     <div class="bkg-panel" id="bkg-pick" data-panel="pick">
-      <div class="bkg-lanewrap">
-        <span class="bkg-tl micro" aria-hidden="true">V1</span>
-        <div class="bkg-scroll" id="bkg-scroll">
-          <div class="bkg-track" id="bkg-track" role="group" aria-label="Pick a day. Use the arrow keys to move.">
-            <div class="bkg-ruler" aria-hidden="true"></div>
-            <div class="bkg-clips" id="bkg-days"></div>
-            <i class="bkg-ph" id="bkg-ph" aria-hidden="true"></i>
-          </div>
+      <div class="bkg-cal">
+        <div class="bkg-cal-head">
+          <p class="label" id="bkg-month" aria-live="polite"></p>
+          <p class="bkg-key label muted" aria-hidden="true"><i class="o"></i> OPEN <i></i> BOOKED OR OFF</p>
         </div>
+        <div class="bkg-wk label muted" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+        <div class="bkg-days" id="bkg-days" role="group" aria-label="Pick a day. Use the arrow keys to move."></div>
       </div>
       <p class="bkg-err small" id="bkg-loaderr" hidden></p>
 
@@ -502,6 +500,7 @@
           <button type="button" class="btn btn-primary bkg-next" id="bkg-next" data-cursor="link" hidden><span class="btn-in">Continue</span></button>
         </div>
       </div>
+      <p class="bkg-hint label muted" aria-hidden="true">Pick a day.<br>Open days have a dot.</p>
     </div>
 
     <!-- Step 3: details -->
