@@ -844,3 +844,7 @@ html.menu-open .nav { visibility: hidden; }
 /* Plain-text email (no links yet): match the link rows it replaced */
 .menu-foot span { min-height: 44px; display: flex; align-items: center; }
 .ft-cols > div > span { min-height: 32px; display: inline-flex; align-items: center; }
+
+/* Real email is longer than the placeholder: keep it on one line and give it its own footer row on mobile */
+.contact-mail .d2 { font-size: clamp(1.125rem, 5.4vw, 4.75rem); overflow-wrap: normal; white-space: nowrap; }
+@media (max-width: 767px) { .ft-cols > div:first-child { grid-column: 1 / -1; } }
