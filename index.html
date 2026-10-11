@@ -463,6 +463,7 @@
   <p class="bkg-sub muted" data-reveal>30 minutes on Google Meet. Pick a day, pick a time. The invite lands in your inbox.</p>
 
   <div class="bkg" id="bkg">
+    <p class="bkg-fallback small" id="bkg-fallback">Calendar not loading? Email jhonlloydvincent29@gmail.com.</p>
     <ol class="bkg-steps label" id="bkg-steps" aria-label="Booking steps">
       <li data-s="1" aria-current="step"><b>01</b> DAY</li>
       <li data-s="2"><b>02</b> TIME</li>
@@ -470,7 +471,6 @@
       <li data-s="4"><b>04</b> BOOKED</li>
     </ol>
     <p class="sr-only" id="bkg-announce" aria-live="polite"></p>
-    <p class="bkg-msg label" id="bkg-msg" aria-live="assertive"></p>
 
     <!-- Steps 1 + 2: day lane and time grid -->
     <div class="bkg-panel" id="bkg-pick" data-panel="pick">
@@ -492,6 +492,7 @@
             <h3 class="h1" id="bkg-dayname" tabindex="-1"></h3>
             <p class="label muted" id="bkg-zone"></p>
           </div>
+          <p class="bkg-msg label" id="bkg-msg" aria-live="assertive"></p>
           <div class="bkg-grid" id="bkg-grid" role="group" aria-labelledby="bkg-dayname"></div>
         </div>
         <div class="bkg-mon" id="bkg-mon">

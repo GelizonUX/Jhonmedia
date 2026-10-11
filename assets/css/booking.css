@@ -23,13 +23,13 @@
 @media (max-width: 559px) {
   .bkg-steps { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 0; letter-spacing: .06em; }
   .bkg-steps li { padding: 6px 5px; }
-  .bkg-steps li + li::before { display: none; }
+  .bkg-steps li + li::before { left: -4px; }
 }
 @media (max-width: 374px) { .bkg-steps { font-size: 11px; letter-spacing: .03em; } .bkg-steps li { padding: 6px 3px; } }
 
 /* Live message ("That time just got booked") */
-.bkg-msg { display: none; margin-top: var(--s-4); padding: var(--s-3) var(--s-4); border: 1px solid var(--c-white); color: var(--c-white); }
-.bkg-msg.is-on { display: block; }
+.bkg-msg { margin-top: var(--s-4); padding: var(--s-3) var(--s-4); border: 1px solid var(--c-white); color: var(--c-white); }
+.bkg-msg:not(.is-on) { height: 0; margin: 0; padding: 0; border: 0; overflow: hidden; }
 
 .bkg-panel { margin-top: var(--s-6); }
 .bkg-panel[hidden], .bkg-times[hidden] { display: none; }
@@ -95,7 +95,7 @@ html.js .bkg-day.is-load .bkg-bars { animation: bkg-pulse 1.2s steps(2, jump-non
   transition: transform var(--d-3) var(--ease-out), opacity var(--d-2) linear;
 }
 .bkg-ph::before { content: ""; position: absolute; left: -4px; top: 0; width: 9px; height: 10px; background: var(--c-white); clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%); }
-.bkg-ph.is-idle { opacity: .35; }
+.bkg-ph.is-idle { opacity: 0; }
 .bkg-ph.no-anim { transition: none; }
 
 /* ---------- Step 2: time grid ---------- */
@@ -211,3 +211,6 @@ html.js .bkg-day.is-load .bkg-bars { animation: bkg-pulse 1.2s steps(2, jump-non
   .bkg-ph, .bkg-day, .bkg-time, .bkg-exp-bar i { transition: none !important; }
   html.js .bkg-panel:not([hidden]), .bkg-time.is-flip, html.js .bkg-day.is-load .bkg-bars, #bkg-check::before { animation: none !important; }
 }
+
+.bkg-fallback { margin-bottom: var(--s-5); color: var(--c-mute); }
+.bkg-fallback[hidden] { display: none; }

@@ -1,5 +1,4 @@
-/* JHON MEDIA · booking.js
-   Live booking (#book). API contract: booking/SETUP.md. Vanilla, fails quietly. */
+/* booking.js: live booking (#book). API contract: booking/SETUP.md */
 var BOOKING_CONFIG = {
   apiUrl: 'https://script.google.com/macros/s/AKfycbyRGxbLtwj8UO1yju8xzUI_bDyhp9J8WPPtgxTnlW1McsQ3qn8nwDiGwp8W5aVnrq9C/exec',
   refreshSeconds: 60,
@@ -13,8 +12,11 @@ var BOOKING_CONFIG = {
 'use strict';
 var C = BOOKING_CONFIG, doc = document, win = window;
 function $(id) { return doc.getElementById(id); }
-function mk(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function B(id) { return $('bkg-' + id); }
+function mk(tag, cls, text) { var e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) tx(e, text); return e; }
 function attr(el, n) { return el && el.getAttribute ? el.getAttribute(n) : null; }
+function on(el, e, f) { el.addEventListener(e, f); }
+function tx(el, t) { el.textContent = t; }
 function sa(el, o) { for (var k in o) el.setAttribute(k, o[k]); return el; }
 var mqR = win.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 function RM() { return mqR.matches; }
@@ -37,7 +39,8 @@ function init() {
   function dayLabel(d, f) { return (f || fDL).format(d).replace(',', '').toUpperCase(); }
   function zoneAbbr(d) { try { return fZone.formatToParts(d).filter(function (p) { return p.type === 'timeZoneName'; })[0].value; } catch (e) { return ''; } }
   function endOf(iso) { return new Date(Date.parse(iso) + slotMin * 6e4); }
-  function whenText(iso) { var s = new Date(iso); return dayLabel(s) + ' · ' + fTime.format(s) + ' to ' + fTime.format(endOf(iso)) + ' ' + zoneAbbr(s); }
+  function tNb(d) { return fTime.format(d).replace(/\s(?=[AP]M)/, '\u00a0'); }
+  function whenText(iso) { var s = new Date(iso); return dayLabel(s) + ' · ' + tNb(s) + ' to ' + tNb(endOf(iso)) + '\u00a0' + zoneAbbr(s); }
   function manilaText(iso) {
     if (TZ === C.manilaZone) return 'MANILA TIME. SAME AS YOURS.';
     var s = new Date(iso);
@@ -49,7 +52,7 @@ function init() {
   var step = 1, selDay = null, selIso = null, meetUrl = '', taken = {};
   var lastOk = 0, failing = false, fetching = null, retryT = null, backoff = 0, inView = false, started = false;
 
-  /* 21 local days from today; times grouped by the visitor's local date */
+  /* 21 local days; times grouped by local date */
   function buildDays() {
     var n = new Date(), out = [];
     for (var i = 0; i < C.laneDays; i++) {
@@ -63,7 +66,8 @@ function init() {
     list.forEach(function (d) { map[d.key] = d; });
     (api || []).forEach(function (ad) {
       function add(iso, open) {
-        var d = map[keyOf(new Date(iso))]; if (!d) return;
+        var k = keyOf(new Date(iso)), d = map[k];
+        if (!d) { if (k < list[list.length - 1].key) return; d = map[k] = { key: k, date: new Date(iso), times: [], open: 0, busy: 0, full: false }; list.push(d); }
         if (taken[iso]) open = false;
         d.times.push({ iso: iso, open: open, t: Date.parse(iso) });
         if (open) d.open++; else d.busy++;
@@ -76,6 +80,7 @@ function init() {
         ks.forEach(function (k) { if (map[k]) map[k].full = true; });
       }
     });
+    list.sort(function (a, b) { return a.key < b.key ? -1 : 1; });
     list.forEach(function (d) { d.times.sort(function (a, b) { return a.t - b.t; }); });
     days = list; byKey = map; loaded = true;
     checkSelection(); renderDays();
@@ -88,10 +93,10 @@ function init() {
   }
 
   /* Messages */
-  var msgEl = $('bkg-msg'), annEl = $('bkg-announce'), msgT;
-  function say(t) { annEl.textContent = ''; setTimeout(function () { annEl.textContent = t; }, 30); }
+  var msgEl = B('msg'), annEl = B('announce'), msgT;
+  function say(t) { tx(annEl, ''); setTimeout(function () { tx(annEl, t); }, 30); }
   function flash(t) {
-    msgEl.textContent = t; msgEl.classList.toggle('is-on', !!t);
+    tx(msgEl, t); msgEl.classList.toggle('is-on', !!t); if (t) say(t);
     clearTimeout(msgT); if (t) msgT = setTimeout(function () { flash(''); }, 9000);
   }
 
@@ -99,15 +104,15 @@ function init() {
   var SAY = ['', 'Pick a day.', 'Pick a time.', 'Your details.', 'Booked.'];
   function setStep(n, quiet) {
     step = n;
-    [].forEach.call($('bkg-steps').children, function (li) {
+    [].forEach.call(B('steps').children, function (li) {
       var s = +attr(li, 'data-s');
       li.classList.toggle('is-done', s < n);
       if (s === n) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
     });
-    $('bkg-pick').hidden = n > 2;
-    $('bkg-details').hidden = n !== 3;
-    $('bkg-done').hidden = n !== 4;
-    $('bkg-times').hidden = !(n <= 2 && selDay);
+    B('pick').hidden = n > 2;
+    B('details').hidden = n !== 3;
+    B('done').hidden = n !== 4;
+    B('times').hidden = !(n <= 2 && selDay);
     if (!quiet) say('Step ' + n + ' of 4. ' + SAY[n]);
   }
   function nearView(el) {
@@ -120,14 +125,14 @@ function init() {
   }
 
   /* Step 1: day lane */
-  var daysEl = $('bkg-days'), scrollEl = $('bkg-scroll'), ph = $('bkg-ph');
+  var daysEl = B('days'), scrollEl = B('scroll'), ph = B('ph');
   function dayEl(k) { return k ? daysEl.querySelector('[data-key="' + k + '"]') : null; }
   function renderDays() {
     if (!days.length) days = buildDays();
     var hasSel = !!byKey[selDay], first = 0;
     days.some(function (d, i) { if (dayState(d) === 'open') { first = i; return true; } });
     keepFocus(daysEl, 'data-key', function () {
-      daysEl.textContent = '';
+      tx(daysEl, '');
       days.forEach(function (d, i) {
         var st = dayState(d), on = d.key === selDay, b = mk('button', 'bkg-day is-' + st + (on ? ' is-sel' : ''));
         var wd = fWd.format(d.date).toUpperCase(), dt = fDM.format(d.date).toUpperCase();
@@ -167,15 +172,15 @@ function init() {
     laneTo(dayEl(key));
     setStep(2); renderTimes();
     var first = gridEl.querySelector('[tabindex="0"]');
-    if (kbd && first) first.focus(); else { $('bkg-dayname').focus({ preventScroll: true }); nearView($('bkg-times')); }
+    if (kbd && first) first.focus(); else { B('dayname').focus({ preventScroll: true }); nearView(B('times')); }
   }
-  daysEl.addEventListener('click', function (e) {
+  on(daysEl, 'click', function (e) {
     var b = e.target.closest('.bkg-day'); if (b) pickDay(attr(b, 'data-key'), e.detail === 0);
   });
 
   /* Roving tabindex + arrow keys */
   function rove(box, sel, cols) {
-    box.addEventListener('keydown', function (e) {
+    on(box, 'keydown', function (e) {
       var items = [].slice.call(box.querySelectorAll(sel)), i = items.indexOf(doc.activeElement), c = cols(), k = e.key;
       if (i < 0) return;
       var j = k === 'ArrowRight' ? i + 1 : k === 'ArrowLeft' ? i - 1 : k === 'ArrowDown' ? i + c : k === 'ArrowUp' ? i - c : k === 'Home' ? 0 : k === 'End' ? items.length - 1 : null;
@@ -190,17 +195,17 @@ function init() {
   rove(daysEl, '.bkg-day', function () { return 1; });
 
   /* Step 2: time grid */
-  var gridEl = $('bkg-grid');
+  var gridEl = B('grid');
   rove(gridEl, '.bkg-time', function () { try { return getComputedStyle(gridEl).gridTemplateColumns.split(' ').length; } catch (e) { return 1; } });
   function renderTimes(flipIso) {
     var d = byKey[selDay]; if (!d) return;
     var z = zoneAbbr(d.date);
-    $('bkg-dayname').textContent = dayLabel(d.date);
-    $('bkg-zone').textContent = 'Times in ' + TZ.replace(/_/g, ' ') + (z ? ' (' + z + ')' : '');
+    tx(B('dayname'), dayLabel(d.date));
+    tx(B('zone'), 'Times in ' + TZ.replace(/_/g, ' ') + (z ? ' (' + z + ')' : ''));
     var anySel = d.times.some(function (t) { return t.iso === selIso; }), firstOk = 0;
     d.times.some(function (t, i) { if (t.open) { firstOk = i; return true; } });
     keepFocus(gridEl, 'data-iso', function () {
-      gridEl.textContent = '';
+      tx(gridEl, '');
       d.times.forEach(function (t, i) {
         var on = t.iso === selIso, s = new Date(t.iso);
         var b = mk('button', 'bkg-time ' + (t.open ? 'is-open' : 'is-busy') + (on ? ' is-sel' : '') + (t.iso === flipIso ? ' is-flip' : ''));
@@ -213,25 +218,25 @@ function init() {
       });
     });
     var ok = isOpen(selIso);
-    $('bkg-in').textContent = ok ? f24.format(new Date(selIso)) : '00:00';
-    $('bkg-out').textContent = ok ? f24.format(endOf(selIso)) : '00:00';
-    $('bkg-mnl').textContent = ok ? manilaText(selIso) : 'Pick a time.';
-    $('bkg-next').hidden = !ok;
-    $('bkg-mon').classList.toggle('is-set', ok);
+    tx(B('in'), ok ? f24.format(new Date(selIso)) : '00:00');
+    tx(B('out'), ok ? f24.format(endOf(selIso)) : '00:00');
+    tx(B('mnl'), ok ? manilaText(selIso) : 'Pick a time.');
+    B('next').hidden = !ok;
+    B('mon').classList.toggle('is-set', ok);
   }
   var advT;
-  gridEl.addEventListener('click', function (e) {
+  on(gridEl, 'click', function (e) {
     var b = e.target.closest('.bkg-time'); if (!b || !b.classList.contains('is-open')) return;
     selIso = attr(b, 'data-iso');
     renderTimes(); say('Picked ' + whenText(selIso) + '.');
     clearTimeout(advT);
     advT = setTimeout(function () { if (step === 2 && selIso) toDetails(); }, RM() ? 250 : 650);
   });
-  $('bkg-next').addEventListener('click', function () { if (selIso) toDetails(); });
+  on(B('next'), 'click', function () { if (selIso) toDetails(); });
 
   /* Live flip: picked time got taken */
   function checkSelection() {
-    if (!selIso || step === 4 || isOpen(selIso)) return;
+    if (!selIso || step === 4 || submitting || isOpen(selIso)) return;
     var gone = selIso;
     selIso = null; clearTimeout(advT);
     flash('That time just got booked. Pick another.');
@@ -244,23 +249,23 @@ function init() {
   }
 
   /* Step 3: details */
-  var form = $('bkg-form'), go = $('bkg-go'), check = $('bkg-check'), errEl = $('bkg-err');
+  var form = B('form'), go = B('go'), check = B('check'), errEl = B('err');
   function toDetails() {
     setStep(3);
-    $('bkg-card-when').textContent = whenText(selIso);
-    $('bkg-card-mnl').textContent = manilaText(selIso);
-    errEl.textContent = ''; go.hidden = true; check.hidden = false;
-    $('bkg-name').focus(); nearView($('bkg-details'));
-    // Re-fetch right before the Book it button shows.
+    tx(B('card-when'), whenText(selIso));
+    tx(B('card-mnl'), manilaText(selIso));
+    tx(errEl, ''); go.hidden = true; check.hidden = false;
+    B('name').focus(); nearView(B('details'));
     load().then(function () { if (step === 3 && selIso) { check.hidden = true; go.hidden = false; } });
   }
-  $('bkg-change').addEventListener('click', function () {
+  on(B('change'), 'click', function () {
     setStep(1); renderDays(); renderTimes();
     var el = dayEl(selDay) || daysEl.firstChild;
     if (el) { laneTo(el); el.focus({ preventScroll: true }); }
-    nearView($('bkg-pick'));
+    nearView(B('pick'));
   });
 
+  on(form, 'input', function (e) { var k = e.target.name; if (k === 'name' || k === 'email') fieldErr(k, ''); });
   function fieldErr(id, t) {
     var inp = $('bkg-' + id);
     $('bkg-' + id + '-err').textContent = t || '';
@@ -273,27 +278,27 @@ function init() {
     server_error: 'Something broke on my side. Try again, or email ' + C.email + '.'
   };
   function showErr(code) {
-    if (code !== 'network') { errEl.textContent = ERR[code] || ERR.server_error; return; }
-    errEl.textContent = 'Can\'t reach the calendar. Check your connection and try again. Or email me: ';
+    if (code !== 'network') { tx(errEl, ERR[code] || ERR.server_error); return; }
+    tx(errEl, 'Can\'t reach the calendar. Check your connection and try again. Or email me: ');
     var a = errEl.appendChild(mk('a', 'ulink', C.email));
     a.href = 'mailto:' + C.email + '?subject=' + encodeURIComponent('Booking a call');
     errEl.appendChild(doc.createTextNode('.'));
   }
 
   /* Export-style progress bar */
-  var exp = $('bkg-exp'), expT, expV = 0;
-  function expSet(v) { expV = v; $('bkg-exp-fill').style.transform = 'scaleX(' + v / 100 + ')'; $('bkg-exp-pct').textContent = ('00' + Math.round(v)).slice(-3) + '%'; }
+  var exp = B('exp'), expT, expV = 0;
+  function expSet(v) { expV = v; B('exp-fill').style.transform = 'scaleX(' + v / 100 + ')'; tx(B('exp-pct'), ('00' + Math.round(v)).slice(-3) + '%'); }
   var submitting = false;
   function resetSubmit() { submitting = false; go.disabled = false; go.removeAttribute('aria-busy'); clearInterval(expT); exp.hidden = true; }
 
-  form.addEventListener('submit', function (e) {
+  on(form, 'submit', function (e) {
     e.preventDefault();
     if (submitting || !selIso) return;
     function v(n) { return (form.elements[n].value || '').trim(); }
     var name = v('name'), email = v('email'), okMail = EMAIL_RE.test(email);
     fieldErr('name', name ? '' : NAME_ERR);
     fieldErr('email', okMail ? '' : MAIL_ERR);
-    errEl.textContent = '';
+    tx(errEl, '');
     if (!name || !okMail) { $(name ? 'bkg-email' : 'bkg-name').focus(); return; }
     var payload = {
       start: selIso, name: name, email: email, brand: v('brand'), link: v('link'),
@@ -316,29 +321,29 @@ function init() {
       var code = (res && res.error) || 'server_error';
       resetSubmit();
       if (code === 'slot_taken') { taken[payload.start] = 1; if (res.days) { rawDays = res.days; markOk(); } applyData(rawDays); }
-      else if (code === 'missing_name') { fieldErr('name', NAME_ERR); $('bkg-name').focus(); }
-      else if (code === 'bad_email') { fieldErr('email', MAIL_ERR); $('bkg-email').focus(); }
-      else showErr(code);
-    }, function () { if (submitting) { resetSubmit(); showErr('network'); } });
+      else if (code === 'missing_name') { fieldErr('name', NAME_ERR); B('name').focus(); }
+      else if (code === 'bad_email') { fieldErr('email', MAIL_ERR); B('email').focus(); }
+      else { showErr(code); go.focus(); }
+    }, function () { if (submitting) { resetSubmit(); showErr('network'); go.focus(); } });
   });
 
   /* Step 4: booked */
   function done(res, name) {
     var link = meetUrl = res.meetLink;
     setStep(4);
-    $('bkg-done-name').textContent = 'See you there, ' + name.split(' ')[0] + '.';
-    $('bkg-done-when').textContent = whenText(res.start || selIso);
-    $('bkg-meet').hidden = !link;
-    if (link) $('bkg-meet-link').href = link;
-    $('bkg-done-note').textContent = link ? 'The invite and Meet link are in your inbox. Add it to your calendar from there.' : 'Your Meet link is in the calendar invite.';
-    $('bkg-done-title').focus({ preventScroll: true }); nearView($('bkg-done'));
+    tx(B('done-name'), 'See you there, ' + name.split(' ')[0] + '.');
+    tx(B('done-when'), whenText(res.start || selIso));
+    B('meet').hidden = !link;
+    if (link) B('meet-link').href = link;
+    tx(B('done-note'), link ? 'The invite and Meet link are in your inbox. Add it to your calendar from there.' : 'Your Meet link is in the calendar invite.');
+    B('done-title').focus({ preventScroll: true }); nearView(B('done'));
     selIso = null;
-    load(); // so the slot shows BOOKED for everyone
+    load(); // slot shows BOOKED for everyone
   }
-  $('bkg-meet-copy').addEventListener('click', function () {
+  on(B('meet-copy'), 'click', function () {
     var inner = this.querySelector('.btn-in'), url = meetUrl;
     if (!url) return;
-    function ok() { inner.textContent = 'Copied'; setTimeout(function () { inner.textContent = 'Copy link'; }, 1600); }
+    function ok() { tx(inner, 'Copied'); setTimeout(function () { tx(inner, 'Copy link'); }, 1600); }
     if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok); else win.prompt('Copy this link', url);
   });
 
@@ -348,7 +353,7 @@ function init() {
     o.signal = ctl.signal; o.cache = 'no-store';
     return fetch(url, o).then(function (r) { clearTimeout(t); return r.json(); });
   }
-  function markOk() { lastOk = Date.now(); failing = false; backoff = 0; $('bkg-loaderr').hidden = true; tick(); }
+  function markOk() { lastOk = Date.now(); failing = false; backoff = 0; B('loaderr').hidden = true; tick(); }
   function load() {
     if (fetching) return fetching;
     clearTimeout(retryT); retryT = null;
@@ -359,8 +364,8 @@ function init() {
       rawDays = res.days; markOk(); applyData(rawDays);
     }).catch(function () {
       failing = true; tick();
-      var le = $('bkg-loaderr');
-      if (!loaded) { le.hidden = false; le.textContent = 'Can\'t load times right now. Retrying. Or email ' + C.email + '.'; }
+      var le = B('loaderr');
+      if (!loaded) { le.hidden = false; tx(le, 'Can\'t load times right now. Retrying. Or email ' + C.email + '.'); }
       backoff = Math.min(backoff ? backoff * 2 : 2, 60);
       retryT = setTimeout(function () { retryT = null; if (!doc.hidden) load(); }, backoff * 1000);
     }).then(function () { fetching = null; });
@@ -368,18 +373,18 @@ function init() {
   }
 
   /* Live indicator + refresh while on screen */
-  var syncEl = $('bkg-sync'), liveEl = $('bkg-live');
+  var syncEl = B('sync'), liveEl = B('live');
   function tick() {
     var s = Math.max(0, Math.floor((Date.now() - lastOk) / 1000));
     var t = failing ? 'OFFLINE · RETRYING' : !lastOk ? 'CONNECTING' : 'LIVE · SYNCED ' + (s < 60 ? s + 'S' : Math.floor(s / 60) + 'M') + ' AGO';
-    if (syncEl.textContent !== t) syncEl.textContent = t;
+    if (syncEl.textContent !== t) tx(syncEl, t);
     liveEl.classList.toggle('is-off', failing);
   }
   setInterval(function () {
     tick();
     if (inView && !doc.hidden && lastOk && !failing && !fetching && Date.now() - lastOk >= C.refreshSeconds * 1000) load();
   }, 1000);
-  doc.addEventListener('visibilitychange', function () { if (!doc.hidden && started) load(); });
+  on(doc, 'visibilitychange', function () { if (!doc.hidden && started) load(); });
 
   /* Boot */
   days = buildDays(); renderDays(); setStep(1, true);
@@ -387,9 +392,10 @@ function init() {
   if ('IntersectionObserver' in win) {
     new IntersectionObserver(function (es) { es.forEach(function (e) { inView = e.isIntersecting; if (inView) start(); }); }, { rootMargin: '600px 0px' }).observe(sec);
   } else { inView = true; start(); }
-  win.addEventListener('resize', function () { movePlayhead(true); });
+  on(win, 'resize', function () { movePlayhead(true); });
+  B('fallback').hidden = true;
 }
 
-function boot() { try { init(); } catch (e) { if (win.console) console.warn('[jm] booking failed', e); } }
-if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot); else boot();
+function boot() { try { init(); } catch (e) { var s = B('sync'); if (s) tx(s, 'OFFLINE'); if (win.console) console.warn('[jm] booking failed', e); } }
+if (doc.readyState === 'loading') on(doc, 'DOMContentLoaded', boot); else boot();
 })();
