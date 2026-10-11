@@ -22,6 +22,7 @@ Verified from an outside origin: `?action=ping`, `?action=slots` and POST valida
 4. Left sidebar > **Services** (+) > **Google Calendar API** > **Add**. This gives you the Google Meet link. Skip it and bookings still work, just without Meet.
 5. Project Settings (gear) > set **Time zone** to `(GMT+08:00) Manila`.
 6. Edit `CONFIG` at the top if you want different hours, call length or buffers.
+7. `ownerEmail` is where your "New booking" alert goes. Google Calendar does not email you about events the script adds to your own calendar, so this alert is how you hear about bookings. Blank sends it to the account that runs the script.
 
 ## 2. Authorize and test
 

@@ -40,7 +40,7 @@ var CONFIG = {
   eventTitle: 'Discovery call · {name}{brand}',
   addMeetLink: true,              // needs the "Google Calendar API" advanced service (see SETUP.md)
   sendConfirmationEmail: true,    // branded email to the client on top of the calendar invite
-  ownerEmail: '',                 // optional: extra address to notify; blank = the script owner
+  ownerEmail: 'jhonlloydvincent29@gmail.com', // gets a "New booking" email for every booking; blank = the script owner
   allowedOrigins: []              // informational only; Apps Script cannot enforce CORS
 };
 
@@ -209,11 +209,14 @@ function book_(b) {
     if (CONFIG.sendConfirmationEmail) {
       try { sendConfirmation_(name, email, start, clientTz, result.meetLink); } catch (mailErr) { /* invite still went out */ }
     }
-    if (CONFIG.ownerEmail) {
+    // Notify the owner. Google Calendar never emails you about events your own script creates.
+    var owner = CONFIG.ownerEmail || Session.getEffectiveUser().getEmail();
+    if (owner) {
       try {
-        MailApp.sendEmail(CONFIG.ownerEmail, 'New booking: ' + title, description +
-          '\n\nWhen: ' + Utilities.formatDate(start, CONFIG.timeZone, "EEE d MMM yyyy, HH:mm '(" + CONFIG.timeZone + ")'"));
-      } catch (e2) {}
+        MailApp.sendEmail(owner, 'New booking: ' + title, description +
+          '\n\nWhen: ' + Utilities.formatDate(start, CONFIG.timeZone, "EEE d MMM yyyy, HH:mm '(" + CONFIG.timeZone + ")'") +
+          (result.meetLink ? '\nMeet: ' + result.meetLink : ''));
+      } catch (e2) { console.error('Owner email failed: ' + e2); }
     }
 
     return {
