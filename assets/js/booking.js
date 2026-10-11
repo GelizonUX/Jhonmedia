@@ -32,7 +32,7 @@ function init() {
   var fKey = F({ year: 'numeric', month: '2-digit', day: '2-digit' }, 0, 'en-CA');
   var H23 = { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' };
   var WDM = { weekday: 'short', day: 'numeric', month: 'short' };
-  var fWd = F({ weekday: 'short' }), fDM = F({ day: 'numeric', month: 'short' }, 0, 'en-GB'), fDL = F(WDM, 0, 'en-GB');
+  var fDL = F(WDM, 0, 'en-GB');
   var fTime = F({ hour: 'numeric', minute: '2-digit' }), f24 = F(H23), fZone = F({ timeZoneName: 'short' });
   var mDate = F(WDM, C.manilaZone, 'en-GB'), m24 = F(H23, C.manilaZone);
   function keyOf(d) { return fKey.format(d); }
@@ -124,52 +124,35 @@ function init() {
     var f = v && box.querySelector('[' + a + '="' + v + '"]'); if (f) f.focus({ preventScroll: true });
   }
 
-  /* Step 1: day lane */
-  var daysEl = B('days'), scrollEl = B('scroll'), ph = B('ph');
+  /* Step 1: calendar */
+  var daysEl = B('days'), fNum = F({ day: 'numeric' }), fMon = F({ month: 'short' }), fYr = F({ year: 'numeric' });
   function dayEl(k) { return k ? daysEl.querySelector('[data-key="' + k + '"]') : null; }
   function renderDays() {
     if (!days.length) days = buildDays();
-    var hasSel = !!byKey[selDay], first = 0;
+    var hasSel = !!byKey[selDay], first = 0, d0 = days[0].date, dN = days[days.length - 1].date;
+    var m0 = fMon.format(d0), mN = fMon.format(dN);
+    tx(B('month'), (m0 === mN ? m0 : m0 + ' / ' + mN).toUpperCase() + ' ' + fYr.format(dN));
     days.some(function (d, i) { if (dayState(d) === 'open') { first = i; return true; } });
     keepFocus(daysEl, 'data-key', function () {
       tx(daysEl, '');
+      for (var k = (d0.getDay() + 6) % 7; k > 0; k--) daysEl.appendChild(mk('span', 'bkg-pad'));
       days.forEach(function (d, i) {
-        var st = dayState(d), on = d.key === selDay, b = mk('button', 'bkg-day is-' + st + (on ? ' is-sel' : ''));
-        var wd = fWd.format(d.date).toUpperCase(), dt = fDM.format(d.date).toUpperCase();
-        var stx = st === 'open' ? d.open + ' OPEN' : st === 'full' ? 'FULLY BOOKED' : st === 'off' ? 'OFF' : 'LOADING';
-        sa(b, { type: 'button', 'data-key': d.key, 'data-cursor': 'link', 'aria-pressed': on });
+        var st = dayState(d), on = d.key === selDay, n = fNum.format(d.date), b = mk('button', 'bkg-day is-' + st + (on ? ' is-sel' : ''));
+        var stx = st === 'open' ? d.open + ' open' : st === 'full' ? 'fully booked' : st === 'off' ? 'off' : 'loading';
+        sa(b, { type: 'button', 'data-key': d.key, 'data-cursor': 'link', 'aria-pressed': on, 'aria-label': dayLabel(d.date) + ', ' + stx });
         b.tabIndex = (on || (!hasSel && i === first)) ? 0 : -1;
         if (st !== 'open') sa(b, { 'aria-disabled': 'true' });
-        b.appendChild(mk('span', 'bkg-wd', wd));
-        b.appendChild(mk('span', 'bkg-dt', dt));
-        var bars = sa(b.appendChild(mk('span', 'bkg-bars')), { 'aria-hidden': 'true' });
-        d.times.forEach(function (t) { bars.appendChild(mk('i', t.open ? 'o' : 'x')); });
-        b.appendChild(mk('span', 'bkg-st', stx));
+        if (n === '1' || !i) b.appendChild(mk('span', 'bkg-mo', fMon.format(d.date).toUpperCase()));
+        b.appendChild(mk('span', 'bkg-n', n));
         daysEl.appendChild(b);
       });
     });
-    movePlayhead(true);
-  }
-  function movePlayhead(instant) {
-    var el = dayEl(selDay);
-    ph.classList.toggle('is-idle', !el);
-    el = el || daysEl.firstChild; if (!el) return;
-    var snap = instant || RM();
-    if (snap) { ph.classList.add('no-anim'); void ph.offsetWidth; }
-    ph.style.transform = 'translate3d(' + (el.offsetLeft + el.offsetWidth / 2) + 'px,0,0)';
-    if (snap) requestAnimationFrame(function () { ph.classList.remove('no-anim'); });
-  }
-  function laneTo(el) {
-    var l = el.offsetLeft, r = l + el.offsetWidth, sl = scrollEl.scrollLeft, w = scrollEl.clientWidth, x = null;
-    if (l < sl) x = l; else if (r > sl + w) x = r - w;
-    if (x !== null) scrollEl.scrollTo({ left: x, behavior: RM() ? 'auto' : 'smooth' });
   }
   function pickDay(key, kbd) {
     var d = byKey[key];
     if (!d || dayState(d) !== 'open') return;
     if (selDay !== key) { selDay = key; selIso = null; }
-    renderDays(); movePlayhead(false);
-    laneTo(dayEl(key));
+    renderDays();
     setStep(2); renderTimes();
     var first = gridEl.querySelector('[tabindex="0"]');
     if (kbd && first) first.focus(); else { B('dayname').focus({ preventScroll: true }); nearView(B('times')); }
@@ -189,10 +172,9 @@ function init() {
       j = Math.max(0, Math.min(items.length - 1, j));
       items.forEach(function (x, n) { x.tabIndex = n === j ? 0 : -1; });
       items[j].focus({ preventScroll: true });
-      if (box === daysEl) laneTo(items[j]);
     });
   }
-  rove(daysEl, '.bkg-day', function () { return 1; });
+  rove(daysEl, '.bkg-day', function () { return 7; });
 
   /* Step 2: time grid */
   var gridEl = B('grid');
@@ -261,7 +243,7 @@ function init() {
   on(B('change'), 'click', function () {
     setStep(1); renderDays(); renderTimes();
     var el = dayEl(selDay) || daysEl.firstChild;
-    if (el) { laneTo(el); el.focus({ preventScroll: true }); }
+    if (el) el.focus({ preventScroll: true });
     nearView(B('pick'));
   });
 
@@ -392,7 +374,6 @@ function init() {
   if ('IntersectionObserver' in win) {
     new IntersectionObserver(function (es) { es.forEach(function (e) { inView = e.isIntersecting; if (inView) start(); }); }, { rootMargin: '600px 0px' }).observe(sec);
   } else { inView = true; start(); }
-  on(win, 'resize', function () { movePlayhead(true); });
   B('fallback').hidden = true;
 }
 
